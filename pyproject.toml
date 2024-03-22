@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "spare-parts-accounting"
+version = "0.1.0"
+description = ""
+authors = ["roman <imationnn@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.110.0"}
+asyncpg = "^0.29.0"
+alembic = "^1.13.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.28"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
