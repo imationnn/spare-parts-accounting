@@ -2,7 +2,11 @@ from sqlalchemy import ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base, created_at, int_def0
+from .base import Base, created_at, int_def0, def_false
+
+
+class StatusMovements:  # TODO добавить статусы
+    pass
 
 
 class Movement(Base):
@@ -13,17 +17,21 @@ class Movement(Base):
     created_employee_id: Mapped[int]
     accepted_employee_id: Mapped[int | None]
     total_price: Mapped[int_def0]
-    is_sent: Mapped[bool] = mapped_column(default=False, server_default="False")
-    is_deleted: Mapped[bool] = mapped_column(default=False, server_default="False")
+    is_sent: Mapped[def_false]
+    is_deleted: Mapped[def_false]
 
 
 class MovementDetail(Base):
-    product_id: Mapped[int]
-    status: Mapped[int]
+    product_id: Mapped[int] = mapped_column(ForeignKey("actual_products.id"))
+    status: Mapped[int]  # TODO добавить дефолтный статус
     qty: Mapped[int]
-    price: Mapped[int]
     amount: Mapped[int]
     created_at: Mapped[created_at]
-    move_id: Mapped[int]
+    move_id: Mapped[int] = mapped_column(ForeignKey("movements.id"))
     employee_id: Mapped[int]
-    is_deleted: Mapped[bool]
+    is_deleted: Mapped[def_false]
+
+
+class StatusMovement(Base):
+    eng_name: Mapped[str]
+    rus_name: Mapped[str]

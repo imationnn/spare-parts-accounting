@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base
+from .base import Base, int_def0, def_false
 
 
 class Supplier(Base):
@@ -9,17 +9,25 @@ class Supplier(Base):
     org_attr_id: Mapped[int | None] = mapped_column(ForeignKey("org_attrs.id"))
 
 
-class Client(Base):
+class PhysicalClient(Base):
     first_name: Mapped[str | None]
     last_name: Mapped[str | None]
     patronymic: Mapped[str | None]
     phone: Mapped[str | None]
     email: Mapped[str | None]
-    sale: Mapped[int | None] = mapped_column(default=0, server_default="0")
+    sale: Mapped[int_def0]
     sale_card: Mapped[str | None] = mapped_column(unique=True)
     comment: Mapped[str | None]
-    is_black_list: Mapped[bool] = mapped_column(default=False, server_default="False")
+    is_black_list: Mapped[def_false]
+
+
+class JuridicalClient(Base):
     org_name: Mapped[str | None]
+    sale: Mapped[int_def0]
+    sale_card: Mapped[str | None] = mapped_column(unique=True)
+    phone: Mapped[str | None]
+    comment: Mapped[str | None]
+    is_black_list: Mapped[def_false]
     org_attr_id: Mapped[int | None] = mapped_column(ForeignKey("org_attrs.id"))
 
 

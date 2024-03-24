@@ -5,9 +5,9 @@ from .base import Base
 
 
 class Roles:
-    admin = 1
-    director = 2
-    manager = 3
+    admin = {"rus_name": "Администратор", "id": 1}
+    director = {"rus_name": "Директор", "id": 2}
+    manager = {"rus_name": "Менеджер", "id": 3}
 
 
 class Role(Base):
@@ -21,5 +21,7 @@ class Employee(Base):
     full_name: Mapped[str]
     phone: Mapped[str | None]
     is_active: Mapped[bool] = mapped_column(default=True, server_default="True")
-    role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'), default=Roles.manager, server_default=f"{Roles.manager}")
+    role_id: Mapped[int] = mapped_column(ForeignKey('roles.id'),
+                                         default=Roles.manager['id'],
+                                         server_default=f"{Roles.manager['id']}")
     refresh_token: Mapped[str | None]

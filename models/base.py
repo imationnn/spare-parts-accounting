@@ -6,6 +6,7 @@ from typing import Annotated
 
 created_at = Annotated[datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 int_def0 = Annotated[int, mapped_column(default=0, server_default="0")]
+def_false = Annotated[bool, mapped_column(default=False, server_default="False")]
 
 
 class Base(DeclarativeBase):

@@ -8,7 +8,8 @@ class ClientCar(Base):
     car_id: Mapped[int] = mapped_column(ForeignKey("catalog_cars.id"))
     vin_code: Mapped[str | None]
     comment: Mapped[str | None]
-    client_id: Mapped[int]
+    physical_client_id: Mapped[int | None]
+    juridical_client_id: Mapped[int | None]
 
 
 class CatalogCar(Base):  # TODO придумать иерархию!
