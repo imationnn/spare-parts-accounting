@@ -13,13 +13,13 @@ class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     @declared_attr
-    def __tablename__(cls) -> str:
+    def __tablename__(self) -> str:
         """
-        Меняет название таблицы с CamelCase на camel_case
+        Меняет название таблицы с "CamelCase" на "camel_case"
         :return:
         """
         table_name = str()
-        for char in cls.__name__:
+        for char in self.__name__:
             if char.isupper():
                 if table_name:
                     table_name += "_"

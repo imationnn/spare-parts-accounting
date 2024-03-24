@@ -21,7 +21,7 @@ class ActualProduct(Base):
 
 
 class Shop(Base):
-    short_name: Mapped[str]
+    short_name: Mapped[str] = mapped_column(unique=True)
     full_name: Mapped[str | None]
-    ip_address: Mapped[str]
+    ip_address: Mapped[str] = mapped_column(unique=True)
     is_active: Mapped[bool] = mapped_column(default=True, server_default="True")
