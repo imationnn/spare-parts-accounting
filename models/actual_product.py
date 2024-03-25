@@ -1,5 +1,6 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+from decimal import Decimal
 
 from .base import Base, created_at, int_def0
 
@@ -9,7 +10,7 @@ class ActualProduct(Base):
     arrived: Mapped[int]
     released: Mapped[int_def0]
     rest: Mapped[int]
-    price: Mapped[int]
+    price: Mapped[Decimal]
     movement_id: Mapped[int | None]
     reserve: Mapped[int_def0]
     shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))

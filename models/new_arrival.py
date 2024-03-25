@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import Base, created_at, int_def0, def_false
+from .base import Base, created_at, def_false
 
 
 class NewArrival(Base):
@@ -11,7 +11,7 @@ class NewArrival(Base):
     shop_id: Mapped[int]
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
     supplier_id: Mapped[int] = mapped_column(ForeignKey("suppliers.id"))
-    total_price: Mapped[int_def0]
+    total_price: Mapped[Decimal] = mapped_column(default=0, server_default="0")
     is_transferred: Mapped[def_false]
 
 
@@ -20,7 +20,7 @@ class NewArrivalDetail(Base):
     created_at: Mapped[created_at]
     qty: Mapped[int]
     price_in: Mapped[Decimal]
-    price_out: Mapped[int]
+    price_out: Mapped[Decimal]
     amount: Mapped[Decimal]
     currency: Mapped[str] = mapped_column(default="RUB", server_default="RUB")
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))

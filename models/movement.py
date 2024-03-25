@@ -1,35 +1,67 @@
 from sqlalchemy import ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
+from decimal import Decimal
 
-from .base import Base, created_at, int_def0, def_false
-
-
-class StatusMovements:  # TODO добавить статусы
-    pass
+from .base import Base, created_at
 
 
-class Movement(Base):
-    from_shop_id: Mapped[int]
-    to_shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))
+class StatusMovements:
+    created = {"rus_name": "Создано", "id": 1}
+    sent = {"rus_name": "Отправлено", "id": 2}
+    deleted = {"rus_name": "Удалено", "id": 3}
+    accepted = {"rus_name": "Принято", "id": 4}
+    on_transit = {"rus_name": "В пути", "id": 5}
+    added = {"rus_name": "Добавлено", "id": 6}
+    completed = {"rus_name": "Выдано", "id": 7}
+
+
+class IncomingMovement(Base):
+    from_shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))
+    to_shop_id: Mapped[int]
+    status: Mapped[int] = mapped_column(ForeignKey("status_movements.id"),
+                                        default=StatusMovements.on_transit['id'],
+                                        server_default=f"{StatusMovements.on_transit['id']}")
     created_at: Mapped[created_at]
     arrived_at: Mapped[datetime | None]
     created_employee_id: Mapped[int]
     accepted_employee_id: Mapped[int | None]
-    total_price: Mapped[int_def0]
-    is_sent: Mapped[def_false]
-    is_deleted: Mapped[def_false]
+    total_price: Mapped[Decimal]
 
 
-class MovementDetail(Base):
-    product_id: Mapped[int] = mapped_column(ForeignKey("actual_products.id"))
-    status: Mapped[int]  # TODO добавить дефолтный статус
-    qty: Mapped[int]
-    amount: Mapped[int]
+class OutgoingMovement(Base):
+    from_shop_id: Mapped[int]
+    to_shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))
+    status: Mapped[int] = mapped_column(ForeignKey("status_movements.id"),
+                                        default=StatusMovements.created['id'],
+                                        server_default=f"{StatusMovements.created['id']}")
     created_at: Mapped[created_at]
-    move_id: Mapped[int] = mapped_column(ForeignKey("movements.id"))
+    sent_at: Mapped[datetime | None]
+    created_employee_id: Mapped[int]
+    total_price: Mapped[Decimal]
+
+
+class IncomingMovementDetail(Base):
+    product_id: Mapped[int] = mapped_column(ForeignKey("actual_products.id"))
+    status: Mapped[int] = mapped_column(ForeignKey("status_movements.id"),
+                                        default=StatusMovements.on_transit['id'],
+                                        server_default=f"{StatusMovements.on_transit['id']}")
+    qty: Mapped[int]
+    amount: Mapped[Decimal]
+    move_id: Mapped[int] = mapped_column(ForeignKey("incoming_movements.id"))
     employee_id: Mapped[int]
-    is_deleted: Mapped[def_false]
+
+
+class OutgoingMovementDetail(Base):
+    product_id: Mapped[int] = mapped_column(ForeignKey("actual_products.id"))
+    status: Mapped[int] = mapped_column(ForeignKey("status_movements.id"),
+                                        default=StatusMovements.added['id'],
+                                        server_default=f"{StatusMovements.added['id']}")
+    qty: Mapped[int]
+    amount: Mapped[Decimal]
+    created_at: Mapped[created_at]
+    move_id: Mapped[int] = mapped_column(ForeignKey("outgoing_movements.id"))
+    employee_id: Mapped[int]
 
 
 class StatusMovement(Base):
