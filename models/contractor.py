@@ -10,8 +10,8 @@ class Supplier(Base):
 
 
 class PhysicalClient(Base):
-    first_name: Mapped[str | None]
-    last_name: Mapped[str | None]
+    first_name: Mapped[str]
+    last_name: Mapped[str]
     patronymic: Mapped[str | None]
     phone: Mapped[str | None]
     email: Mapped[str | None]
@@ -22,7 +22,7 @@ class PhysicalClient(Base):
 
 
 class JuridicalClient(Base):
-    org_name: Mapped[str | None]
+    org_name: Mapped[str]
     sale: Mapped[int_def0]
     sale_card: Mapped[str | None] = mapped_column(unique=True)
     phone: Mapped[str | None]

@@ -14,11 +14,11 @@ class ActualProduct(Base):
     movement_id: Mapped[int | None]
     reserve: Mapped[int_def0]
     shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))
-    arrive_id: Mapped[int]
+    arrive_id: Mapped[int] = mapped_column(ForeignKey("new_arrivals.id"))
     arrived_at: Mapped[created_at]
     created_at: Mapped[created_at]
     safety_reserve: Mapped[int | None]
-    comment: Mapped[str]
+    comment: Mapped[str | None]
 
 
 class Shop(Base):

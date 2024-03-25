@@ -12,7 +12,7 @@ class Roles:
 
 class Role(Base):
     eng_name: Mapped[str]
-    rus_name: Mapped[str | None]
+    rus_name: Mapped[str]
 
 
 class Employee(Base):

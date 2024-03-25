@@ -63,7 +63,7 @@ class PhysicalOrderDetail(Base):
                                            server_default=f"{StatusOrders.added['id']}")
     qty_available: Mapped[int_def0]
     qty_needed: Mapped[int]
-    order_id: Mapped[int] = mapped_column(ForeignKey("physical_orders.id"))
+    order_id: Mapped[int] = mapped_column(ForeignKey("physical_orders.id", ondelete="CASCADE"))
     employee_id: Mapped[int]
     price: Mapped[Decimal]
     supplier_id: Mapped[int | None]
@@ -86,7 +86,7 @@ class JuridicalOrderDetail(Base):
                                            server_default=f"{StatusOrders.added['id']}")
     qty_available: Mapped[int_def0]
     qty_needed: Mapped[int]
-    order_id: Mapped[int] = mapped_column(ForeignKey("juridical_orders.id"))
+    order_id: Mapped[int] = mapped_column(ForeignKey("juridical_orders.id", ondelete="CASCADE"))
     employee_id: Mapped[int]
     price: Mapped[Decimal]
     supplier_id: Mapped[int | None]

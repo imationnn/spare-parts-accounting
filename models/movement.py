@@ -60,7 +60,7 @@ class OutgoingMovementDetail(Base):
     qty: Mapped[int]
     amount: Mapped[Decimal]
     created_at: Mapped[created_at]
-    move_id: Mapped[int] = mapped_column(ForeignKey("outgoing_movements.id"))
+    move_id: Mapped[int] = mapped_column(ForeignKey("outgoing_movements.id", ondelete="CASCADE"))
     employee_id: Mapped[int]
 
 
