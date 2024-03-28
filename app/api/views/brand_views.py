@@ -19,7 +19,7 @@ async def get_brand_by_id(brand_id: int, brand_service: BrandService = Depends(B
     return await brand_service.get_brand_by_id(brand_id)
 
 
-@brand_router.post("/new-brand",
+@brand_router.post("/new",
                    status_code=201,
                    summary='Добавить новый бренд',
                    response_description="Created")
@@ -27,7 +27,7 @@ async def add_new_brand(brand_name: BrandNewIn, brand_service: BrandService = De
     return await brand_service.add_brand(brand_name)
 
 
-@brand_router.patch("/edit-brand",
+@brand_router.patch("/edit",
                     summary='Изменить название бренда')
 async def edit_brand(brand: BrandUpdIn, brand_service: BrandService = Depends(BrandService)) -> BrandUpdOut:
     return await brand_service.edit_brand(brand)

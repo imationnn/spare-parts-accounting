@@ -14,9 +14,9 @@ class BaseRepository:
         return await self.session.scalar(stmt)
 
     async def get_multi(self, order: str = "id", limit: int = 100, offset: int = 0) -> Sequence[Base]:
-        stmt = select(self.model).order_by(*order).limit(limit).offset(offset)
-        result = await self.session.execute(stmt)
-        return result.scalars().all()
+        stmt = select(self.model).order_by(order).limit(limit).offset(offset)
+        result = await self.session.scalars(stmt)
+        return result.all()
 
     async def add_one(self, **data) -> Base:
         stmt = insert(self.model).values(**data).returning(self.model)
