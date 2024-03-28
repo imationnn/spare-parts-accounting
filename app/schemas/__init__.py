@@ -1,3 +1,1 @@
-from .brand_schema import BrandInUpd
-
-__all__ = ["BrandInUpd"]
+from .brand_schema import BrandId, BrandUpdIn, BrandNewIn, BrandName, BrandNewOut, BrandUpdOut

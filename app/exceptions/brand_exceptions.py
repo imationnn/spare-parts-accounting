@@ -7,5 +7,5 @@ class BrandNotFound(BaseExceptions):
 
 
 class BrandAlreadyExist(BaseExceptions):
-    status_code: int = 400
+    status_code: int = 409
     detail: str = "Такой бренд уже есть"
