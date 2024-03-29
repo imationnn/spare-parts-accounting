@@ -1,5 +1,5 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from decimal import Decimal
 
 from .base import Base
@@ -14,6 +14,12 @@ class MarginCategories:
 
 
 class CatalogPart(Base):
+    __table_args__ = (
+        UniqueConstraint(
+            "number",
+            "brand_id",
+            name="catalog_parts_unique"),
+    )
     number: Mapped[str]
     brand_id: Mapped[int] = mapped_column(ForeignKey("brands.id"))
     desc_eng: Mapped[str | None]
@@ -23,6 +29,9 @@ class CatalogPart(Base):
                                            server_default=f"{MarginCategories.category_1['id']}")
     search_id: Mapped[str]
     comment: Mapped[str | None]
+
+    brand: Mapped["Brand"] = relationship(lazy='joined')
+    margin: Mapped["MarginCategory"] = relationship()
 
 
 class Brand(Base):

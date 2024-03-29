@@ -13,8 +13,8 @@ class BaseRepository:
         stmt = select(self.model).filter_by(**filter_by)
         return await self.session.scalar(stmt)
 
-    async def get_multi(self, order: str = "id", limit: int = 100, offset: int = 0) -> Sequence[Base]:
-        stmt = select(self.model).order_by(order).limit(limit).offset(offset)
+    async def get_multi(self, order: str = "id", limit: int = 100, offset: int = 0, **filter_by) -> Sequence[Base]:
+        stmt = select(self.model).filter_by(**filter_by).order_by(order).limit(limit).offset(offset)
         result = await self.session.scalars(stmt)
         return result.all()
 

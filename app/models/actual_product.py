@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from decimal import Decimal
 
 from .base import Base, created_at, int_def0
+
+
+if TYPE_CHECKING:
+    from .catalog import CatalogPart
 
 
 class ActualProduct(Base):
@@ -19,6 +24,8 @@ class ActualProduct(Base):
     created_at: Mapped[created_at]
     safety_reserve: Mapped[int | None]
     comment: Mapped[str | None]
+
+    part: Mapped["CatalogPart"] = relationship(lazy='joined')
 
 
 class Shop(Base):

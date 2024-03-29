@@ -27,16 +27,14 @@ class BrandService(BrandRepository):
     async def add_brand(self, brand_new: BrandNewIn) -> BrandNewOut:
         if await self.get_one(brand_name=brand_new.brand_name):
             raise BrandAlreadyExist
-        from_base = await self.add_one(brand_name=brand_new.brand_name)
-        result = BrandNewOut.model_validate(from_base, from_attributes=True)
+        result = await self.add_one(brand_name=brand_new.brand_name)
         await self.session.commit()
-        return result
+        return BrandNewOut.model_validate(result, from_attributes=True)
 
     async def edit_brand(self, brand: BrandUpdIn) -> BrandUpdOut:
         await self.get_brand_by_id(brand.id)
         if await self.get_one(brand_name=brand.brand_name):
             raise BrandAlreadyExist
-        from_base = await self.edit_one(brand.id, brand_name=brand.brand_name)
-        result = BrandUpdOut.model_validate(from_base, from_attributes=True)
+        result = await self.edit_one(brand.id, brand_name=brand.brand_name)
         await self.session.commit()
-        return result
+        return BrandUpdOut.model_validate(result, from_attributes=True)
