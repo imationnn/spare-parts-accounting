@@ -1,14 +1,13 @@
 from sqlalchemy import ForeignKey
 from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime
 
 from .base import Base, created_at, def_false
 
 
 class NewArrival(Base):
     invoice_number: Mapped[str] = mapped_column(unique=True)
-    invoice_data: Mapped[datetime]
+    invoice_data: Mapped[str]
     created_at: Mapped[created_at]
     shop_id: Mapped[int]
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))

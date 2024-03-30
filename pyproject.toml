@@ -12,6 +12,14 @@ asyncpg = "^0.29.0"
 alembic = "^1.13.1"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.28"}
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.1.1"
+pytest-asyncio = "^0.23.6"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [".", "app"]
+asyncio_mode = "auto"

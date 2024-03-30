@@ -5,8 +5,8 @@ from .config import PGConfig
 
 
 class Database:
-    def __init__(self):
-        self.pg_config = PGConfig()
+    def __init__(self, pg_config: PGConfig = PGConfig()):
+        self.pg_config = pg_config
         self.engine = create_async_engine(url=self.pg_config.pg_dsn, echo=self.pg_config.echo)
         self.session_factory = async_sessionmaker(
             bind=self.engine,
