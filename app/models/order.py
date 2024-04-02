@@ -1,9 +1,8 @@
 from sqlalchemy import ForeignKey
-from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
-from .base import Base, created_at, int_def0, def_false
+from .base import Base, created_at, int_def0, def_false, num_20_2
 from .payment_method import PaymentMethods
 
 
@@ -24,8 +23,8 @@ class PhysicalOrder(Base):
                                            server_default=f"{StatusOrders.new['id']}")
     client_id: Mapped[int] = mapped_column(ForeignKey("physical_clients.id"))
     created_at: Mapped[created_at]
-    prepayment: Mapped[Decimal] = mapped_column(default=0, server_default="0")
-    total_price: Mapped[Decimal]
+    prepayment: Mapped[num_20_2] = mapped_column(default=0, server_default="0")
+    total_price: Mapped[num_20_2]
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"),
                                                    default=PaymentMethods.cash['id'],
                                                    server_default=f"{PaymentMethods.cash['id']}")
@@ -43,8 +42,8 @@ class JuridicalOrder(Base):
                                            server_default=f"{StatusOrders.new['id']}")
     client_id: Mapped[int] = mapped_column(ForeignKey("juridical_clients.id"))
     created_at: Mapped[created_at]
-    prepayment: Mapped[Decimal] = mapped_column(default=0, server_default="0")
-    total_price: Mapped[Decimal]
+    prepayment: Mapped[num_20_2] = mapped_column(default=0, server_default="0")
+    total_price: Mapped[num_20_2]
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"),
                                                    default=PaymentMethods.cash['id'],
                                                    server_default=f"{PaymentMethods.cash['id']}")
@@ -65,11 +64,11 @@ class PhysicalOrderDetail(Base):
     qty_needed: Mapped[int]
     order_id: Mapped[int] = mapped_column(ForeignKey("physical_orders.id", ondelete="CASCADE"))
     employee_id: Mapped[int]
-    price: Mapped[Decimal]
+    price: Mapped[num_20_2]
     supplier_id: Mapped[int | None]
-    amount: Mapped[Decimal]
+    amount: Mapped[num_20_2]
     sale: Mapped[int_def0]
-    prepayment_part: Mapped[Decimal] = mapped_column(default=0, server_default="0")
+    prepayment_part: Mapped[num_20_2] = mapped_column(default=0, server_default="0")
     created_at: Mapped[created_at]
     change_time: Mapped[datetime | None]
     change_employee_id: Mapped[int | None]
@@ -88,11 +87,11 @@ class JuridicalOrderDetail(Base):
     qty_needed: Mapped[int]
     order_id: Mapped[int] = mapped_column(ForeignKey("juridical_orders.id", ondelete="CASCADE"))
     employee_id: Mapped[int]
-    price: Mapped[Decimal]
+    price: Mapped[num_20_2]
     supplier_id: Mapped[int | None]
-    amount: Mapped[Decimal]
+    amount: Mapped[num_20_2]
     sale: Mapped[int_def0]
-    prepayment_part: Mapped[Decimal] = mapped_column(default=0, server_default="0")
+    prepayment_part: Mapped[num_20_2] = mapped_column(default=0, server_default="0")
     created_at: Mapped[created_at]
     change_time: Mapped[datetime | None]
     change_employee_id: Mapped[int | None]

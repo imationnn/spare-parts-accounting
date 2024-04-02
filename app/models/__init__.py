@@ -1,4 +1,4 @@
-from .base import Base, created_at, int_def0, def_false
+from .base import Base, created_at, int_def0, def_false, num_20_2
 from .actual_product import ActualProduct, Shop
 from .car import ClientCar, CatalogCar
 from .catalog import CatalogPart, MarginCategory, Brand, MarginCategories

@@ -1,9 +1,8 @@
 from sqlalchemy import ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
-from decimal import Decimal
 
-from .base import Base, created_at
+from .base import Base, created_at, num_20_2
 
 
 class StatusMovements:
@@ -26,7 +25,7 @@ class IncomingMovement(Base):
     arrived_at: Mapped[datetime | None]
     created_employee_id: Mapped[int]
     accepted_employee_id: Mapped[int | None]
-    total_price: Mapped[Decimal]
+    total_price: Mapped[num_20_2]
 
 
 class OutgoingMovement(Base):
@@ -38,7 +37,7 @@ class OutgoingMovement(Base):
     created_at: Mapped[created_at]
     sent_at: Mapped[datetime | None]
     created_employee_id: Mapped[int]
-    total_price: Mapped[Decimal]
+    total_price: Mapped[num_20_2]
 
 
 class IncomingMovementDetail(Base):
@@ -47,7 +46,7 @@ class IncomingMovementDetail(Base):
                                         default=StatusMovements.on_transit['id'],
                                         server_default=f"{StatusMovements.on_transit['id']}")
     qty: Mapped[int]
-    amount: Mapped[Decimal]
+    amount: Mapped[num_20_2]
     move_id: Mapped[int] = mapped_column(ForeignKey("incoming_movements.id"))
     employee_id: Mapped[int]
 
@@ -58,7 +57,7 @@ class OutgoingMovementDetail(Base):
                                         default=StatusMovements.added['id'],
                                         server_default=f"{StatusMovements.added['id']}")
     qty: Mapped[int]
-    amount: Mapped[Decimal]
+    amount: Mapped[num_20_2]
     created_at: Mapped[created_at]
     move_id: Mapped[int] = mapped_column(ForeignKey("outgoing_movements.id", ondelete="CASCADE"))
     employee_id: Mapped[int]

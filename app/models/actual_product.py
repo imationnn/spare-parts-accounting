@@ -1,9 +1,8 @@
 from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from decimal import Decimal
 
-from .base import Base, created_at, int_def0
+from .base import Base, created_at, int_def0, num_20_2
 
 
 if TYPE_CHECKING:
@@ -15,7 +14,7 @@ class ActualProduct(Base):
     arrived: Mapped[int]
     released: Mapped[int_def0]
     rest: Mapped[int]
-    price: Mapped[Decimal]
+    price: Mapped[num_20_2]
     movement_id: Mapped[int | None]
     reserve: Mapped[int_def0]
     shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))

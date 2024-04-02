@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: bd83d22cb6a7
+Revision ID: 3c7ee4a0882c
 Revises: 
-Create Date: 2024-03-30 15:54:43.589437
+Create Date: 2024-04-01 20:54:13.788415
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bd83d22cb6a7'
+revision: str = '3c7ee4a0882c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('margin_categories',
-    sa.Column('margin_value', sa.Numeric(), nullable=False),
+    sa.Column('margin_value', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
@@ -145,7 +145,7 @@ def upgrade() -> None:
     sa.Column('arrived_at', sa.DateTime(), nullable=True),
     sa.Column('created_employee_id', sa.Integer(), nullable=False),
     sa.Column('accepted_employee_id', sa.Integer(), nullable=True),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['from_shop_id'], ['shops.id'], ),
     sa.ForeignKeyConstraint(['status'], ['status_movements.id'], ),
@@ -171,7 +171,7 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('sent_at', sa.DateTime(), nullable=True),
     sa.Column('created_employee_id', sa.Integer(), nullable=False),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['status'], ['status_movements.id'], ),
     sa.ForeignKeyConstraint(['to_shop_id'], ['shops.id'], ),
@@ -180,7 +180,7 @@ def upgrade() -> None:
     op.create_table('physical_sale_receipts',
     sa.Column('client_id', sa.Integer(), nullable=True),
     sa.Column('status_id', sa.Integer(), server_default='1', nullable=False),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('payment_method_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
@@ -205,8 +205,8 @@ def upgrade() -> None:
     sa.Column('status_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
-    sa.Column('prepayment', sa.Numeric(), server_default='0', nullable=False),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('prepayment', sa.Numeric(precision=20, scale=2), server_default='0', nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('payment_method_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('shop_id', sa.Integer(), nullable=False),
@@ -224,7 +224,7 @@ def upgrade() -> None:
     op.create_table('juridical_sale_receipts',
     sa.Column('client_id', sa.Integer(), nullable=True),
     sa.Column('status_id', sa.Integer(), server_default='1', nullable=False),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('payment_method_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
@@ -245,7 +245,7 @@ def upgrade() -> None:
     sa.Column('shop_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('supplier_id', sa.Integer(), nullable=False),
-    sa.Column('total_price', sa.Numeric(), server_default='0', nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), server_default='0', nullable=False),
     sa.Column('is_transferred', sa.Boolean(), server_default='False', nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['employee_id'], ['employees.id'], ),
@@ -257,8 +257,8 @@ def upgrade() -> None:
     sa.Column('status_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
-    sa.Column('prepayment', sa.Numeric(), server_default='0', nullable=False),
-    sa.Column('total_price', sa.Numeric(), nullable=False),
+    sa.Column('prepayment', sa.Numeric(precision=20, scale=2), server_default='0', nullable=False),
+    sa.Column('total_price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('payment_method_id', sa.Integer(), server_default='1', nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('shop_id', sa.Integer(), nullable=False),
@@ -278,7 +278,7 @@ def upgrade() -> None:
     sa.Column('arrived', sa.Integer(), nullable=False),
     sa.Column('released', sa.Integer(), server_default='0', nullable=False),
     sa.Column('rest', sa.Integer(), nullable=False),
-    sa.Column('price', sa.Numeric(), nullable=False),
+    sa.Column('price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('movement_id', sa.Integer(), nullable=True),
     sa.Column('reserve', sa.Integer(), server_default='0', nullable=False),
     sa.Column('shop_id', sa.Integer(), nullable=False),
@@ -300,11 +300,11 @@ def upgrade() -> None:
     sa.Column('qty_needed', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
-    sa.Column('price', sa.Numeric(), nullable=False),
+    sa.Column('price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('supplier_id', sa.Integer(), nullable=True),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('sale', sa.Integer(), server_default='0', nullable=False),
-    sa.Column('prepayment_part', sa.Numeric(), server_default='0', nullable=False),
+    sa.Column('prepayment_part', sa.Numeric(precision=20, scale=2), server_default='0', nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('change_time', sa.DateTime(), nullable=True),
     sa.Column('change_employee_id', sa.Integer(), nullable=True),
@@ -322,9 +322,9 @@ def upgrade() -> None:
     sa.Column('part_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('qty', sa.Integer(), nullable=False),
-    sa.Column('price_in', sa.Numeric(), nullable=False),
-    sa.Column('price_out', sa.Numeric(), nullable=False),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('price_in', sa.Numeric(precision=20, scale=2), nullable=False),
+    sa.Column('price_out', sa.Numeric(precision=20, scale=2), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('currency', sa.String(), server_default='RUB', nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('ccd', sa.String(), nullable=True),
@@ -341,11 +341,11 @@ def upgrade() -> None:
     sa.Column('qty_needed', sa.Integer(), nullable=False),
     sa.Column('order_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
-    sa.Column('price', sa.Numeric(), nullable=False),
+    sa.Column('price', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('supplier_id', sa.Integer(), nullable=True),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('sale', sa.Integer(), server_default='0', nullable=False),
-    sa.Column('prepayment_part', sa.Numeric(), server_default='0', nullable=False),
+    sa.Column('prepayment_part', sa.Numeric(precision=20, scale=2), server_default='0', nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('change_time', sa.DateTime(), nullable=True),
     sa.Column('change_employee_id', sa.Integer(), nullable=True),
@@ -363,7 +363,7 @@ def upgrade() -> None:
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.Column('status', sa.Integer(), server_default='5', nullable=False),
     sa.Column('qty', sa.Integer(), nullable=False),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('move_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -377,10 +377,10 @@ def upgrade() -> None:
     sa.Column('qty_available', sa.Integer(), nullable=False),
     sa.Column('qty_needed', sa.Integer(), nullable=False),
     sa.Column('status_id', sa.Integer(), server_default='4', nullable=False),
-    sa.Column('price', sa.Numeric(), nullable=False),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('price', sa.Numeric(precision=20, scale=2), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('sale', sa.Integer(), server_default='0', nullable=False),
-    sa.Column('prepayment_part', sa.Numeric(), nullable=True),
+    sa.Column('prepayment_part', sa.Numeric(precision=20, scale=2), nullable=True),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('paid_time', sa.DateTime(), nullable=True),
     sa.Column('order_id', sa.Integer(), nullable=True),
@@ -397,7 +397,7 @@ def upgrade() -> None:
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.Column('status', sa.Integer(), server_default='6', nullable=False),
     sa.Column('qty', sa.Integer(), nullable=False),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('move_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
@@ -412,10 +412,10 @@ def upgrade() -> None:
     sa.Column('qty_available', sa.Integer(), nullable=False),
     sa.Column('qty_needed', sa.Integer(), nullable=False),
     sa.Column('status_id', sa.Integer(), server_default='4', nullable=False),
-    sa.Column('price', sa.Numeric(), nullable=False),
-    sa.Column('amount', sa.Numeric(), nullable=False),
+    sa.Column('price', sa.Numeric(precision=20, scale=2), nullable=False),
+    sa.Column('amount', sa.Numeric(precision=20, scale=2), nullable=False),
     sa.Column('sale', sa.Integer(), server_default='0', nullable=False),
-    sa.Column('prepayment_part', sa.Numeric(), nullable=True),
+    sa.Column('prepayment_part', sa.Numeric(precision=20, scale=2), nullable=True),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('paid_time', sa.DateTime(), nullable=True),
     sa.Column('order_id', sa.Integer(), nullable=True),

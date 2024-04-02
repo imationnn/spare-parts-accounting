@@ -16,13 +16,6 @@ class CatalogService(CatalogRepository):
         self.session = session
 
     @staticmethod
-    def check_values(part: BaseModel) -> dict:
-        values = part.model_dump(exclude_none=True)
-        if not values:
-            raise HTTPException(400)
-        return values
-
-    @staticmethod
     def normalize_number(number: str) -> str | None:
         result = re.sub('[^A-Za-z0-9]', '', number)
         if not result:
@@ -41,7 +34,9 @@ class CatalogService(CatalogRepository):
         return [CatalogOutByNumber.model_validate(item, from_attributes=True) for item in result]
 
     async def update_part(self, part_id: int, part: CatalogUpdIn) -> CatalogUpdOut:
-        values = self.check_values(part)
+        values = part.model_dump(exclude_none=True)
+        if not values:
+            raise HTTPException(400)
 
         if number := values.get("number"):
             values["search_id"] = self.normalize_number(number)
@@ -54,7 +49,7 @@ class CatalogService(CatalogRepository):
         return CatalogUpdOut.model_validate(result, from_attributes=True)
 
     async def add_part(self, part: CatalogIn) -> CatalogInOut:
-        values = self.check_values(part)
+        values = part.model_dump(exclude_none=True)
         values["search_id"] = self.normalize_number(values["number"])
         try:
             result = await self.add_one(**values)

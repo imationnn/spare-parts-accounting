@@ -1,8 +1,7 @@
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from decimal import Decimal
 
-from .base import Base
+from .base import Base, num_20_2
 
 
 class MarginCategories:
@@ -41,4 +40,4 @@ class Brand(Base):
 class MarginCategory(Base):
     __tablename__ = "margin_categories"
 
-    margin_value: Mapped[Decimal]
+    margin_value: Mapped[num_20_2]

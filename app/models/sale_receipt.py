@@ -1,9 +1,8 @@
 from sqlalchemy import ForeignKey
-from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
-from .base import Base, created_at, int_def0, def_false
+from .base import Base, created_at, int_def0, def_false, num_20_2
 from .payment_method import PaymentMethods
 
 
@@ -19,7 +18,7 @@ class PhysicalSaleReceipt(Base):
     status_id: Mapped[int] = mapped_column(ForeignKey("status_receipts.id"),
                                            default=StatusReceipts.not_paid['id'],
                                            server_default=f"{StatusReceipts.not_paid['id']}")
-    total_price: Mapped[Decimal]
+    total_price: Mapped[num_20_2]
     created_at: Mapped[created_at]
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"),
                                                    default=PaymentMethods.cash['id'],
@@ -36,7 +35,7 @@ class JuridicalSaleReceipt(Base):
     status_id: Mapped[int] = mapped_column(ForeignKey("status_receipts.id"),
                                            default=StatusReceipts.not_paid['id'],
                                            server_default=f"{StatusReceipts.not_paid['id']}")
-    total_price: Mapped[Decimal]
+    total_price: Mapped[num_20_2]
     created_at: Mapped[created_at]
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"),
                                                    default=PaymentMethods.cash['id'],
@@ -55,10 +54,10 @@ class PhysicalSaleReceiptDetail(Base):
     status_id: Mapped[int] = mapped_column(ForeignKey("status_receipts.id"),
                                            default=StatusReceipts.completed['id'],
                                            server_default=f"{StatusReceipts.completed['id']}")
-    price: Mapped[Decimal]
-    amount: Mapped[Decimal]
+    price: Mapped[num_20_2]
+    amount: Mapped[num_20_2]
     sale: Mapped[int_def0]
-    prepayment_part: Mapped[Decimal | None]
+    prepayment_part: Mapped[num_20_2 | None]
     employee_id: Mapped[int]
     paid_time: Mapped[datetime | None]
     order_id: Mapped[int | None]
@@ -74,10 +73,10 @@ class JuridicalSaleReceiptDetail(Base):
     status_id: Mapped[int] = mapped_column(ForeignKey("status_receipts.id"),
                                            default=StatusReceipts.completed['id'],
                                            server_default=f"{StatusReceipts.completed['id']}")
-    price: Mapped[Decimal]
-    amount: Mapped[Decimal]
+    price: Mapped[num_20_2]
+    amount: Mapped[num_20_2]
     sale: Mapped[int_def0]
-    prepayment_part: Mapped[Decimal | None]
+    prepayment_part: Mapped[num_20_2 | None]
     employee_id: Mapped[int]
     paid_time: Mapped[datetime | None]
     order_id: Mapped[int | None]

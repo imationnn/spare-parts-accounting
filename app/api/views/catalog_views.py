@@ -20,7 +20,8 @@ async def get_part_by_number(number: str,
 
 
 @catalog_router.post("/new",
-                     summary='Добавить новую деталь')
+                     summary='Добавить новую деталь',
+                     status_code=201)
 async def add_part(part: CatalogIn,
                    catalog_service: CatalogService = Depends(CatalogService)) -> CatalogInOut:
     return await catalog_service.add_part(part)
