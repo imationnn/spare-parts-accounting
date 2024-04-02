@@ -30,6 +30,10 @@ class PGConfig(BaseSettings):
 
 class Settings(BaseSettings):
     api_v1_prefix: str = '/api/v1'
+    first_employee_login: str
+    first_employee_password: str
+    first_employee_fullname: str
+    generate_test_data: bool
 
 
 settings = Settings()
