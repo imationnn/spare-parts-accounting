@@ -58,6 +58,7 @@ async def add_static_data(session: AsyncSession):
                   if not eng_name.startswith('__')]
         session.add_all(values)
         await session.commit()
+
     values = [MarginCategory(margin_value=value["value"])
               for eng_name, value in MarginCategories.__dict__.items()
               if not eng_name.startswith('__')]
@@ -69,6 +70,7 @@ async def create_first_user(session: AsyncSession):
     res = await session.execute(select(Employee))
     if res.first():
         return
+
     logger.info("Creating first employee")
     employee = Employee(login=settings.first_employee_login,
                         password=settings.first_employee_password,
@@ -87,8 +89,18 @@ async def generate_all_values(session: AsyncSession):
         await session.rollback()
         logger.info("Creating tables")
         os.system("alembic upgrade head")
+
     logger.info("Generating needed data")
     await add_static_data(session)
+
+
+async def generate_test_data(session: AsyncSession):
+    res = await session.execute(select(Employee))
+    if len(res.all()) > 1:
+        return
+
+    logger.info("Generating test data")
+    await insert_test_data(session)
 
 
 async def main():
@@ -96,10 +108,9 @@ async def main():
         logger.info("Initializing database")
         await init_db(session)
         await generate_all_values(session)
-        # await create_first_user(session)
+        await create_first_user(session)
         if settings.generate_test_data:
-            logger.info("Generating test data")
-            await insert_test_data(session)
+            await generate_test_data(session)
 
 
 if __name__ == '__main__':
