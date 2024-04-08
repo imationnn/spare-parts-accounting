@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from app.config import db_connector
-from app.config import settings
+from app.config import db_connector, settings
+from app.services import AuthHelper
 from app.models import (StatusMovements,
                         StatusMovement,
                         MarginCategories,
@@ -73,7 +73,7 @@ async def create_first_user(session: AsyncSession):
 
     logger.info("Creating first employee")
     employee = Employee(login=settings.first_employee_login,
-                        password=settings.first_employee_password,
+                        password=AuthHelper.get_hash_password(settings.first_employee_password),
                         full_name=settings.first_employee_fullname,
                         role_id=Roles.admin["id"])
     session.add(employee)

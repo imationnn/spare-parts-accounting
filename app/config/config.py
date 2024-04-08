@@ -1,5 +1,7 @@
+from datetime import timedelta
+
 from dotenv import load_dotenv
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, Field
 from pydantic_settings import BaseSettings
 
 
@@ -28,6 +30,21 @@ class PGConfig(BaseSettings):
         return pg_dsn
 
 
+class AuthConfig(BaseSettings):
+    minutes: int = Field(alias='access_token_exp_minutes')
+    hours: int = Field(alias='refresh_token_exp_hours')
+    algorithm: str
+    secret_key: str
+
+    @property
+    def access_token_exp(self):
+        return timedelta(minutes=self.minutes)
+
+    @property
+    def refresh_token_exp(self):
+        return timedelta(hours=self.hours)
+
+
 class Settings(BaseSettings):
     api_v1_prefix: str = '/api/v1'
     first_employee_login: str
@@ -37,3 +54,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+auth_config = AuthConfig()
