@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.services import MarginService
+from app.services import MarginService, AuthHelper
 from app.schemas import Margin
 
 
-margin_router = APIRouter(prefix='/margins', tags=['Наценки'])
+margin_router = APIRouter(prefix='/margins', tags=['Наценки'], dependencies=[Depends(AuthHelper().authorize)])
 
 
 @margin_router.get("/all",

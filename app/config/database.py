@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from typing import AsyncGenerator
+from redis.asyncio import Redis
 
-from .config import PGConfig
+from .config import PGConfig, RedisConfig
 
 
-class Database:
+class PGDatabase:
     def __init__(self, pg_config: PGConfig = PGConfig()):
         self.pg_config = pg_config
         self.engine = create_async_engine(url=self.pg_config.pg_dsn, echo=self.pg_config.echo)
@@ -20,4 +21,17 @@ class Database:
             yield session
 
 
-db_connector = Database()
+class RedisDatabase:
+    def __init__(self, redis_config: RedisConfig = RedisConfig()):
+        self.config = redis_config
+        self.redis = Redis(host=self.config.redis_host,
+                           port=self.config.redis_port,
+                           db=self.config.redis_db_name,
+                           password=self.config.redis_password)
+
+    def get_redis(self) -> Redis:
+        return self.redis
+
+
+db_connector = PGDatabase()
+redis_db = RedisDatabase()

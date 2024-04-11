@@ -9,11 +9,11 @@ load_dotenv()
 
 
 class PGConfig(BaseSettings):
-    host: str
-    port: int
-    name: str
-    login: str | None = None
-    password: str | None = None
+    pg_host: str
+    pg_port: int
+    pg_db_name: str
+    pg_login: str | None = None
+    pg_password: str | None = None
     scheme: str
     echo: bool
 
@@ -21,11 +21,11 @@ class PGConfig(BaseSettings):
     def pg_dsn(self):
         pg_dsn: str = PostgresDsn.build(
             scheme=self.scheme,
-            host=self.host,
-            port=self.port,
-            username=self.login,
-            password=self.password,
-            path=self.name
+            host=self.pg_host,
+            port=self.pg_port,
+            username=self.pg_login,
+            password=self.pg_password,
+            path=self.pg_db_name
         ).unicode_string()
         return pg_dsn
 
@@ -43,6 +43,13 @@ class AuthConfig(BaseSettings):
     @property
     def refresh_token_exp(self):
         return timedelta(hours=self.hours)
+
+
+class RedisConfig(BaseSettings):
+    redis_host: str
+    redis_port: int
+    redis_db_name: str
+    redis_password: str | None = None
 
 
 class Settings(BaseSettings):
