@@ -2,7 +2,7 @@ from datetime import datetime, UTC, timedelta
 
 import bcrypt
 import jwt
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,12 +10,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import db_connector, auth_config, settings, redis_db
 from app.repositories import AuthRepository
 from app.schemas import Tokens, GetMe
-
+from app.exceptions import InvalidLoginPass, AccessIsDenied, InvalidToken, InvalidTokenType
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl=f'{settings.api_v1_prefix}/auth/login')
 
 TYPE_ACCESS_TOKEN = "access"
 TYPE_REFRESH_TOKEN = "refresh"
+NAME_FIELD_TYPE_TOKEN = "type"
+NAME_FIELD_EXP = "exp"
+NAME_FIELD_EMPLOYEE_ID = "employee_id"
+NAME_FIELD_ROLE_ID = "role_id"
 
 
 class AuthHelper:
@@ -44,13 +48,17 @@ class AuthHelper:
         try:
             return jwt.decode(token, secret_key, algorithm)
         except jwt.InvalidTokenError:
-            raise HTTPException(401)
+            raise InvalidToken
 
-    def authorize(self, token: str = Depends(oauth_scheme)) -> dict:
-        data = self.decode_token(token)
-        if data['type'] != TYPE_ACCESS_TOKEN:
-            raise HTTPException(401)
-        return data
+    @staticmethod
+    def check_token_type(payload: dict, token_type: str) -> dict:
+        if payload[NAME_FIELD_TYPE_TOKEN] != token_type:
+            raise InvalidTokenType
+        return payload
+
+    @classmethod
+    def authorize(cls, token: str = Depends(oauth_scheme)) -> dict:
+        return cls.check_token_type(cls.decode_token(token), TYPE_ACCESS_TOKEN)
 
 
 class AuthService(AuthRepository, AuthHelper):
@@ -72,22 +80,30 @@ class AuthService(AuthRepository, AuthHelper):
     ) -> str:
         exp = datetime.now(UTC) + exp_time
         payload = {
-            "type": token_type,
-            "exp": exp,
-            "employee_id": employee_id,
-            "role_id": employee_role_id
+            NAME_FIELD_TYPE_TOKEN: token_type,
+            NAME_FIELD_EXP: exp,
+            NAME_FIELD_EMPLOYEE_ID: employee_id,
+            NAME_FIELD_ROLE_ID: employee_role_id
         }
         return self.encode_token(payload)
 
-    async def validate_user(self, username: str, password: str, ip_address: str) -> Tokens:
+    async def validate_employee(self, username: str, password: str, ip_address: str) -> Tokens:
+        """
+        Takes username, password and ip address from request
+        and returns access and refresh tokens in case of successful authentication.
+        :param username:
+        :param password:
+        :param ip_address:
+        :return:
+        """
         from_base = await self.get_user_by_login_for_auth(username, ip_address)
         if not from_base:
-            raise HTTPException(401)
+            raise InvalidLoginPass
         employee, shop = from_base
         if not employee.is_active:
-            raise HTTPException(403)
+            raise AccessIsDenied
         if not self.validate_password(password, employee.password):
-            raise HTTPException(401)
+            raise InvalidLoginPass
         access_token = self.create_token(
             TYPE_ACCESS_TOKEN,
             auth_config.access_token_exp,
@@ -102,42 +118,51 @@ class AuthService(AuthRepository, AuthHelper):
         return Tokens(access_token=access_token, refresh_token=refresh_token)
 
     async def refresh_token(self, refresh_token: str) -> Tokens:
-        payload = self.decode_token(refresh_token)
-        if payload["type"] != TYPE_REFRESH_TOKEN:
-            raise HTTPException(401)
-        employee = await self.get_employee_cache(payload["employee_id"])
+        """
+        Returns access token.
+        :param refresh_token:
+        :return:
+        """
+        payload = self.check_token_type(self.decode_token(refresh_token), TYPE_REFRESH_TOKEN)
+        employee = await self.get_employee_cache(payload[NAME_FIELD_EMPLOYEE_ID])
         if not employee:
-            raise HTTPException(401)
+            raise InvalidToken
         if employee.refresh_token != refresh_token:
-            raise HTTPException(401)
+            raise InvalidToken
         access_token = self.create_token(
             TYPE_ACCESS_TOKEN,
             auth_config.access_token_exp,
-            payload["employee_id"],
-            payload["role_id"])
+            payload[NAME_FIELD_EMPLOYEE_ID],
+            payload[NAME_FIELD_ROLE_ID])
         return Tokens(access_token=access_token)
 
     async def get_employee_info(self, payload_access: dict) -> GetMe:
-        employee = await self.get_employee_cache(payload_access["employee_id"])
+        """
+        Takes data from access token and returns information about employee.
+        :param payload_access:
+        :return:
+        """
+        employee = await self.get_employee_cache(payload_access[NAME_FIELD_EMPLOYEE_ID])
         if not employee:
-            raise HTTPException(401)
+            raise InvalidToken
         return GetMe(
-            employee_id=payload_access["employee_id"],
+            employee_id=payload_access[NAME_FIELD_EMPLOYEE_ID],
             shop_id=employee.shop_id,
-            role_id=payload_access["role_id"]
+            role_id=payload_access[NAME_FIELD_ROLE_ID]
         )
 
     async def change_shop(self, employee_id: int, shop_id: int):
         employee = await self.update_employee_cache(employee_id, shop_id)
         if not employee:
-            raise HTTPException(400, detail="неверный запрос")
+            raise InvalidToken
 
 
-class CheckRole(AuthHelper):
+class CheckRole:
 
     def __init__(self, allowed_roles: list):
         self.allowed_roles = allowed_roles
 
-    def __call__(self, data: dict = Depends(AuthHelper().authorize)):
-        if data['role_id'] not in self.allowed_roles:
-            raise HTTPException(status_code=403)
+    def __call__(self, data: dict = Depends(AuthHelper.authorize)):
+        if data[NAME_FIELD_ROLE_ID] not in self.allowed_roles:
+            raise AccessIsDenied
+        return data

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.services import CatalogService, AuthHelper
 from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
 
-catalog_router = APIRouter(prefix='/catalog', tags=['Каталог деталей'], dependencies=[Depends(AuthHelper().authorize)])
+catalog_router = APIRouter(prefix='/catalog', tags=['Каталог деталей'], dependencies=[Depends(AuthHelper.authorize)])
 
 
 @catalog_router.get("/by-id",

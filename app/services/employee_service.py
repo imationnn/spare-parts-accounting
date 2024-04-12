@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.exc import StatementError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -6,6 +6,7 @@ from app.config import db_connector
 from app.repositories import EmployeeRepository
 from app.schemas import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUpdOut, NewEmployeeOut
 from app.services import AuthHelper
+from app.exceptions import EmployeeAlreadyExist, EmployeeBadParameters, EmployeeNotFound
 
 
 class EmployeeService(EmployeeRepository):
@@ -16,13 +17,13 @@ class EmployeeService(EmployeeRepository):
     async def get_employee_by_login(self, login: str) -> EmployeeOut:
         employee = await self.get_employee(login=login)
         if not employee:
-            raise HTTPException(404)
+            raise EmployeeNotFound
         return EmployeeOut.model_validate(employee, from_attributes=True)
 
     async def get_employee_by_id(self, employee_id: int) -> EmployeeOut:
         employee = await self.get_employee(id=employee_id)
         if not employee:
-            raise HTTPException(404)
+            raise EmployeeNotFound
         return EmployeeOut.model_validate(employee, from_attributes=True)
 
     async def get_all_employees(self) -> list[EmployeeOut]:
@@ -31,20 +32,20 @@ class EmployeeService(EmployeeRepository):
 
     async def add_new_employee(self, employee: NewEmployee) -> NewEmployeeOut:
         if await self.get_employee(login=employee.login):
-            raise HTTPException(409)
+            raise EmployeeAlreadyExist
         values = employee.model_dump(exclude_none=True)
         values["password"] = AuthHelper.get_hash_password(values["password"])
         try:
             result = await self.add_one(**values)
             await self.session.commit()
         except (StatementError, NoResultFound):
-            raise HTTPException(400)
+            raise EmployeeBadParameters
         return NewEmployeeOut.model_validate(result, from_attributes=True)
 
     async def edit_employee(self, employee_id: int, employee: EmployeeUpdIn) -> EmployeeUpdOut:
         values = employee.model_dump(exclude_none=True)
         if not values:
-            raise HTTPException(400)
+            raise EmployeeBadParameters
 
         if password := values.get("password"):
             values["password"] = AuthHelper.get_hash_password(password)
@@ -53,5 +54,5 @@ class EmployeeService(EmployeeRepository):
             result = await self.update_employee(employee_id, **values)
             await self.session.commit()
         except (StatementError, NoResultFound):
-            raise HTTPException(400)
+            raise EmployeeBadParameters
         return EmployeeUpdOut.model_validate(result, from_attributes=True)

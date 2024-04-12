@@ -16,7 +16,7 @@ class MarginService(MarginRepository):
 
     async def edit_margin_value(self, margin: Margin) -> Margin:
         if not await self.get_one(id=margin.id):
-            raise HTTPException(404, detail='Нет такой категории')
+            raise HTTPException(404, detail='Category not found')
         result = await self.edit_one(margin.id, margin_value=margin.margin_value)
         await self.session.commit()
         return Margin.model_validate(result, from_attributes=True)

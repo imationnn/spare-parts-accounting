@@ -18,7 +18,17 @@ class EmployeeCache:
 class AuthRepository(EmployeeRepository):
     redis: Redis
 
-    async def get_user_by_login_for_auth(self, login: str, ip_address: str) -> list | None:
+    async def get_user_by_login_for_auth(
+            self,
+            login: str,
+            ip_address: str
+    ) -> list[EmployeeRepository.model | Shop] | list[EmployeeRepository.model | None] | None:
+        """
+        Takes login employee and ip address from request, returns list models or None
+        :param login: login employee
+        :param ip_address: from request: Request
+        :return:
+        """
         stmt = (select(self.model, Shop)
                 .options(joinedload(self.model.role))
                 .outerjoin(Shop, Shop.ip_address == ip_address)
