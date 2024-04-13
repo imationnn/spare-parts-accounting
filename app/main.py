@@ -1,5 +1,5 @@
 import uvicorn
-from api import main_router
+from app.api import main_router
 from fastapi import FastAPI
 
 from app.config import settings

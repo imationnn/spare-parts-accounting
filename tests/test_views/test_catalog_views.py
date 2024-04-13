@@ -92,7 +92,7 @@ async def test_get_part_by_number(client: AsyncClient, number: str, status_code:
          "desc_rus": "Масляный фильтр",
      },
      400,
-     {"detail": "Переданы неверные параметры или существующий номер детали"})
+     {"detail": "Invalid parameters or existing part number passed"})
 ])
 async def test_add_part(client: AsyncClient, new_part: dict, status_code: int, result: dict):
     response = await client.post("/catalog/new", json=new_part)
@@ -147,19 +147,19 @@ async def test_add_part(client: AsyncClient, new_part: dict, status_code: int, r
       "desc_eng": "Brake pads",
       },
      400,
-     {"detail": "Переданы неверные параметры или существующий номер детали"}
+     {"detail": "Invalid parameters or existing part number passed"}
      ),
     (3,
      {},
      400,
-     {"detail": "Переданы неверные параметры или существующий номер детали"}
+     {"detail": "Invalid parameters or existing part number passed"}
      ),
     (3,
      {"number": "4241251",
       "brand_id": 2
       },
      400,
-     {"detail": "Переданы неверные параметры или существующий номер детали"}
+     {"detail": "Invalid parameters or existing part number passed"}
      )
 ])
 async def test_edit_part(client: AsyncClient, part_id: int, edit_part: dict, status_code: int, result: dict):

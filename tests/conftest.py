@@ -7,14 +7,14 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import PGConfig, db_connector
-from app.config.database import Database
+from app.config.database import PGDatabase
 from app.main import app
 from app.models import Base
 
 
 pg_config = PGConfig()
-pg_config.name = os.getenv('TEST_DB_NAME')
-test_db_connector = Database(pg_config)
+pg_config.pg_db_name = os.getenv('PG_TEST_DB_NAME')
+test_db_connector = PGDatabase(pg_config)
 
 
 async def override_get_session() -> AsyncGenerator[AsyncSession, None]:
@@ -57,6 +57,14 @@ async def session() -> AsyncSession:
 
 
 @pytest.fixture(scope="session")
-async def client() -> AsyncGenerator[AsyncClient, None]:
+async def authclient() -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test/api/v1") as client:
         yield client
+
+
+@pytest.fixture(scope="session")
+async def header(authclient: AsyncClient):
+    from tests.data_for_test import employees
+    data = {'username': employees[0]["login"], 'password': employees[0]["password"]}
+    resp = await authclient.post("/auth/login", data=data)
+    return {"Authorization": f"Bearer {resp.json()['access_token']}"}
