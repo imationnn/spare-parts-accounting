@@ -24,7 +24,7 @@ class Base(DeclarativeBase):
     @declared_attr
     def __tablename__(self) -> str:
         """
-        Меняет название таблицы с "CamelCase" на "camel_case"
+        Changes the table name from "CamelCase" to "camel_cases"
         :return:
         """
         table_name = str()

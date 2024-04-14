@@ -109,7 +109,7 @@ async def main():
         await init_db(session)
         await generate_all_values(session)
         await create_first_user(session)
-        if settings.generate_test_data:
+        if settings.add_test_data:
             await generate_test_data(session)
 
 

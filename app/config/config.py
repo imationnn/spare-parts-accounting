@@ -57,7 +57,7 @@ class Settings(BaseSettings):
     first_employee_login: str
     first_employee_password: str
     first_employee_fullname: str
-    generate_test_data: bool
+    add_test_data: bool
 
 
 settings = Settings()

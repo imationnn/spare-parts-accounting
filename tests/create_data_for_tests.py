@@ -22,7 +22,7 @@ async def insert_test_data(session: AsyncSession):
         for item in data:
             if model.__name__ == "Employee":
                 item = item.copy()
-                item["password"] = AuthHelper().get_hash_password(item["password"])
+                item["password"] = AuthHelper.get_hash_password(item["password"])
             stmt = insert(model).values(item)
             await session.execute(stmt)
         await session.commit()
