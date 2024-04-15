@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import PGConfig, db_connector
 from app.config.database import PGDatabase
-from app.main import app
+from main import app
 from app.models import Base
 
 

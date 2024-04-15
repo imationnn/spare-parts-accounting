@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-from app.main import app
+from main import app
 
 
 @pytest.fixture(scope="session")
