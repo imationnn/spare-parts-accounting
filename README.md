@@ -73,9 +73,13 @@ venv\Scripts\activate
 ```
 * Установите зависимости:
 * с poetry:
-> poetry install
+```
+poetry install
+```
 * c pip:
-> pip install -r requirements.txt
+```
+pip install -r requirements.txt
+```
 * Измените название файла .env.example на .env
 
 ### Настройка:
@@ -94,10 +98,14 @@ venv\Scripts\activate
 * `SECRET_KEY`
 
 Для генерации ключа можно воспользоваться командой:
-> python -c "import secrets; print(secrets.token_urlsafe(64))"
-
+```
+python -c "import secrets; print(secrets.token_urlsafe(64))"
+```
 ### Запустите проект командой:
-> uvicorn main:app
-> 
+```
+uvicorn main:app
+```
 или
-> python3 main.py
+```
+python3 main.py
+```
