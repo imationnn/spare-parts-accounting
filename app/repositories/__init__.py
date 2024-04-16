@@ -4,3 +4,4 @@ from .margin_repository import MarginRepository
 from .catalog_repository import CatalogRepository
 from .employee_repository import EmployeeRepository
 from .auth_repository import AuthRepository
+from .shop_repository import ShopRepository
