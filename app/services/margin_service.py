@@ -6,17 +6,17 @@ from app.repositories import MarginRepository
 from app.schemas import Margin
 
 
-class MarginService(MarginRepository):
-    def __init__(self, session: AsyncSession = Depends(db_connector.get_session)):
-        self.session = session
+class MarginService:
+    def __init__(self, repository: MarginRepository = Depends(MarginRepository)):
+        self.repository = repository
 
     async def get_all_category(self) -> list[Margin]:
-        result = await self.get_multi()
+        result = await self.repository.get_multi()
         return [Margin.model_validate(item, from_attributes=True) for item in result]
 
     async def edit_margin_value(self, margin: Margin) -> Margin:
-        if not await self.get_one(id=margin.id):
+        if not await self.repository.get_one(id=margin.id):
             raise HTTPException(404, detail='Category not found')
-        result = await self.edit_one(margin.id, margin_value=margin.margin_value)
-        await self.session.commit()
+        result = await self.repository.edit_one(margin.id, margin_value=margin.margin_value)
+        await self.repository.session.commit()
         return Margin.model_validate(result, from_attributes=True)

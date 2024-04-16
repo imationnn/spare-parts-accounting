@@ -1,36 +1,33 @@
 import re
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound, StatementError
 
-from app.config import db_connector
 from app.repositories import CatalogRepository
 from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
 from app.exceptions import PartNotFound, PartBadParameters
 
 
-class CatalogService(CatalogRepository):
+class CatalogService:
 
-    def __init__(self, session: AsyncSession = Depends(db_connector.get_session)):
-        self.session = session
+    def __init__(self, repository: CatalogRepository = Depends(CatalogRepository)):
+        self.repository = repository
 
     @staticmethod
     def normalize_number(number: str) -> str | None:
         result = re.sub('[^A-Za-z0-9]', '', number)
-        if not result:
-            return
-        return result
+        if result:
+            return result
 
     async def get_one_part_by_id(self, part_id: int) -> CatalogOutById:
-        result = await self.get_one_part(part_id)
+        result = await self.repository.get_one_part(part_id)
         if not result:
             raise PartNotFound
         return CatalogOutById.model_validate(result, from_attributes=True)
 
     async def get_parts_by_number(self, number: str) -> list[CatalogOutByNumber]:
         number = self.normalize_number(number)
-        result = await self.get_multi(limit=50, search_id=number)
+        result = await self.repository.get_multi(limit=50, search_id=number)
         return [CatalogOutByNumber.model_validate(item, from_attributes=True) for item in result]
 
     async def update_part(self, part_id: int, part: CatalogUpdIn) -> CatalogUpdOut:
@@ -42,8 +39,8 @@ class CatalogService(CatalogRepository):
             values["search_id"] = self.normalize_number(number)
 
         try:
-            result = await self.edit_one(part_id, **values)
-            await self.session.commit()
+            result = await self.repository.edit_one(part_id, **values)
+            await self.repository.session.commit()
         except (StatementError, NoResultFound):
             raise PartBadParameters
         return CatalogUpdOut.model_validate(result, from_attributes=True)
@@ -52,8 +49,8 @@ class CatalogService(CatalogRepository):
         values = part.model_dump(exclude_none=True)
         values["search_id"] = self.normalize_number(values["number"])
         try:
-            result = await self.add_one(**values)
-            await self.session.commit()
+            result = await self.repository.add_one(**values)
+            await self.repository.session.commit()
         except (StatementError, NoResultFound):
             raise PartBadParameters
         return CatalogInOut.model_validate(result, from_attributes=True)

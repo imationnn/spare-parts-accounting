@@ -14,7 +14,7 @@ employee_router = APIRouter(
 
 
 @employee_router.get("/by-login",
-                     summary='Посмотреть информацию о сотруднике по логину')
+                     summary='Получить информацию о сотруднике по логину')
 async def get_employee_by_login(
         employee_login: str,
         employee_service: EmployeeService = Depends(EmployeeService)
@@ -23,7 +23,7 @@ async def get_employee_by_login(
 
 
 @employee_router.get("/by-id",
-                     summary='Посмотреть информацию о сотруднике по id')
+                     summary='Получить информацию о сотруднике по id')
 async def get_employee_by_id(
         employee_id: int,
         employee_service: EmployeeService = Depends(EmployeeService)
@@ -32,7 +32,7 @@ async def get_employee_by_id(
 
 
 @employee_router.get("/all",
-                     summary='Посмотреть всех сотрудников')
+                     summary='Получить всех сотрудников')
 async def get_all_employee(
         employee_service: EmployeeService = Depends(EmployeeService)
 ) -> list[EmployeeOut]:
