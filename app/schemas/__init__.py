@@ -4,3 +4,4 @@ from .catalog_schema import CatalogIn, CatalogOutById, CatalogOutByNumber, Catal
 from .auth_schema import Tokens, GetMe
 from .employee_schema import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUpdOut, NewEmployeeOut
 from .role_schema import RoleOut
+from .shop_schema import ShopUpd, ShopIn, ShopOut
