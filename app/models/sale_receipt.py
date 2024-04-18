@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime
 
 from .base import Base, created_at, int_def0, def_false, num_20_2
 from .payment_method import PaymentMethods

@@ -1,9 +1,10 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
-from sqlalchemy import text, Numeric
 from datetime import datetime
 from typing import Annotated
-from sqlalchemy.orm import registry
 from decimal import Decimal
+
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
+from sqlalchemy import text, Numeric
+from sqlalchemy.orm import registry
 
 
 created_at = Annotated[datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]

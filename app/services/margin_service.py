@@ -1,7 +1,5 @@
 from fastapi import Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import db_connector
 from app.repositories import MarginRepository
 from app.schemas import Margin
 

@@ -1,5 +1,6 @@
-from sqlalchemy import ForeignKey
 from datetime import datetime
+
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, created_at, num_20_2
