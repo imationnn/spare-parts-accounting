@@ -4,13 +4,12 @@ import bcrypt
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import db_connector, auth_config, settings, redis_db
+from app.config import auth_config, settings
 from app.repositories import AuthRepository
 from app.schemas import Tokens, GetMe
 from app.exceptions import InvalidLoginPass, AccessIsDenied, InvalidToken, InvalidTokenType
+from app.services import BaseService
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl=f'{settings.api_v1_prefix}/auth/login')
 
@@ -61,15 +60,8 @@ class AuthHelper:
         return cls.check_token_type(cls.decode_token(token), TYPE_ACCESS_TOKEN)
 
 
-class AuthService(AuthRepository, AuthHelper):
-
-    def __init__(
-            self,
-            session: AsyncSession = Depends(db_connector.get_session),
-            redis: Redis = Depends(redis_db.get_redis)
-    ):
-        self.session = session
-        self.redis = redis
+class AuthService(BaseService, AuthHelper):
+    repository = AuthRepository()
 
     def create_token(
             self,
@@ -96,7 +88,7 @@ class AuthService(AuthRepository, AuthHelper):
         :param ip_address:
         :return:
         """
-        from_base = await self.get_user_by_login_for_auth(username, ip_address)
+        from_base = await self.repository.get_user_by_login_for_auth(username, ip_address)
         if not from_base:
             raise InvalidLoginPass
         employee, shop = from_base
@@ -114,7 +106,7 @@ class AuthService(AuthRepository, AuthHelper):
             auth_config.refresh_token_exp,
             employee.id,
             employee.role_id)
-        await self.create_employee_cache(employee.id, shop, refresh_token)
+        await self.repository.create_employee_cache(employee.id, shop, refresh_token)
         return Tokens(access_token=access_token, refresh_token=refresh_token)
 
     async def refresh_token(self, refresh_token: str) -> Tokens:
@@ -124,7 +116,7 @@ class AuthService(AuthRepository, AuthHelper):
         :return:
         """
         payload = self.check_token_type(self.decode_token(refresh_token), TYPE_REFRESH_TOKEN)
-        employee = await self.get_employee_cache(payload[NAME_FIELD_EMPLOYEE_ID])
+        employee = await self.repository.get_employee_cache(payload[NAME_FIELD_EMPLOYEE_ID])
         if not employee:
             raise InvalidToken
         if employee.refresh_token != refresh_token:
@@ -142,7 +134,7 @@ class AuthService(AuthRepository, AuthHelper):
         :param payload_access:
         :return:
         """
-        employee = await self.get_employee_cache(payload_access[NAME_FIELD_EMPLOYEE_ID])
+        employee = await self.repository.get_employee_cache(payload_access[NAME_FIELD_EMPLOYEE_ID])
         if not employee:
             raise InvalidToken
         return GetMe(
@@ -152,7 +144,7 @@ class AuthService(AuthRepository, AuthHelper):
         )
 
     async def change_shop(self, employee_id: int, shop_id: int):
-        employee = await self.update_employee_cache(employee_id, shop_id)
+        employee = await self.repository.update_employee_cache(employee_id, shop_id)
         if not employee:
             raise InvalidToken
 

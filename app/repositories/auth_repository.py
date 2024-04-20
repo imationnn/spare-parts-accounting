@@ -5,6 +5,7 @@ from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
+from app.config import redis_db
 from app.models import Shop
 from app.repositories import EmployeeRepository
 
@@ -15,26 +16,9 @@ class EmployeeCache:
     refresh_token: str
 
 
-class AuthRepository(EmployeeRepository):
-    redis: Redis
-
-    async def get_user_by_login_for_auth(
-            self,
-            login: str,
-            ip_address: str
-    ) -> list[EmployeeRepository.model | Shop] | list[EmployeeRepository.model | None] | None:
-        """
-        Takes login employee and ip address from request, returns list models or None
-        :param login: login employee
-        :param ip_address: from request: Request
-        :return:
-        """
-        stmt = (select(self.model, Shop)
-                .options(joinedload(self.model.role))
-                .outerjoin(Shop, Shop.ip_address == ip_address)
-                .where(self.model.login == login))
-        result = await self.session.execute(stmt)
-        return result.one_or_none()
+class EmployeeCacheRepository:
+    def __init__(self, redis: Redis = redis_db()):
+        self.redis = redis
 
     async def create_employee_cache(self, employee_id: str | int, shop: Shop | None, refresh_token: str):
         if shop:
@@ -57,3 +41,24 @@ class AuthRepository(EmployeeRepository):
             emp_cache.shop_id = shop_id
             await self.redis.set(str(employee_id), pickle.dumps(emp_cache))
         return emp_cache
+
+
+class AuthRepository(EmployeeRepository, EmployeeCacheRepository):
+
+    async def get_user_by_login_for_auth(
+            self,
+            login: str,
+            ip_address: str
+    ) -> list[EmployeeRepository.model | Shop] | list[EmployeeRepository.model | None] | None:
+        """
+        Takes login employee and ip address from request, returns list models or None
+        :param login: login employee
+        :param ip_address: from request: Request
+        :return:
+        """
+        stmt = (select(self.model, Shop)
+                .options(joinedload(self.model.role))
+                .outerjoin(Shop, Shop.ip_address == ip_address)
+                .where(self.model.login == login))
+        result = await self.session.execute(stmt)
+        return result.one_or_none()

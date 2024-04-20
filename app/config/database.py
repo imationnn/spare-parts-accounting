@@ -30,7 +30,7 @@ class RedisDatabase:
                            db=self.config.redis_db_name,
                            password=self.config.redis_password)
 
-    def get_redis(self) -> Redis:
+    def __call__(self, *args, **kwargs):
         return self.redis
 
 
