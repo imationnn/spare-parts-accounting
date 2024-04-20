@@ -1,12 +1,12 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 
 from app.repositories import MarginRepository
 from app.schemas import Margin
+from app.services import BaseService
 
 
-class MarginService:
-    def __init__(self, repository: MarginRepository = Depends(MarginRepository)):
-        self.repository = repository
+class MarginService(BaseService):
+    repository = MarginRepository()
 
     async def get_all_category(self) -> list[Margin]:
         result = await self.repository.get_multi()

@@ -1,16 +1,13 @@
-from fastapi import Depends
 from sqlalchemy.exc import StatementError, NoResultFound
 
 from app.repositories import EmployeeRepository
 from app.schemas import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUpdOut, NewEmployeeOut
-from app.services import AuthHelper
+from app.services import AuthHelper, BaseService
 from app.exceptions import EmployeeAlreadyExist, EmployeeBadParameters, EmployeeNotFound
 
 
-class EmployeeService:
-
-    def __init__(self, repository: EmployeeRepository = Depends(EmployeeRepository)):
-        self.repository = repository
+class EmployeeService(BaseService):
+    repository = EmployeeRepository()
 
     async def get_employee_by_login(self, login: str) -> EmployeeOut:
         employee = await self.repository.get_employee(login=login)

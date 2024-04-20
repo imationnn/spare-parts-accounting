@@ -1,14 +1,11 @@
-from fastapi import Depends
-
 from app.exceptions import BrandNotFound, BrandAlreadyExist
 from app.repositories import BrandRepository
 from app.schemas import BrandUpdIn, BrandNewIn, BrandName, BrandId, BrandNewOut, BrandUpdOut
+from app.services import BaseService
 
 
-class BrandService:
-
-    def __init__(self, repository: BrandRepository = Depends(BrandRepository)):
-        self.repository = repository
+class BrandService(BaseService):
+    repository = BrandRepository()
 
     async def get_brand_by_name(self, brand_name: str) -> BrandId:
         result = await self.repository.get_one(brand_name=brand_name)

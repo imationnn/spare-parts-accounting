@@ -1,18 +1,14 @@
 from typing import Sequence
 
-from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, update
 
-from app.config import db_connector
 from app.models import Base
 
 
 class BaseRepository:
     model: type[Base]
-
-    def __init__(self, session: AsyncSession = Depends(db_connector.get_session)):
-        self.session = session
+    session: AsyncSession
 
     async def get_one(self, **filter_by) -> Base | None:
         stmt = select(self.model).filter_by(**filter_by)
