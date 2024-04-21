@@ -1,9 +1,9 @@
 from sqlalchemy.exc import StatementError, NoResultFound
 
 from app.repositories import ShopRepository
-from app.schemas import ShopOut, ShopIn, ShopUpd
+from app.schemas import ShopOut, ShopIn, ShopUpd, ShopDelete
 from app.services import BaseService
-from app.exceptions import ShopBadParameters, ShopNotFound
+from app.exceptions import ShopBadParameters, ShopNotFound, ShopCannotBaDeleted
 
 
 class ShopService(BaseService):
@@ -40,3 +40,13 @@ class ShopService(BaseService):
         except NoResultFound:
             raise ShopNotFound
         return ShopOut.model_validate(result, from_attributes=True)
+
+    async def delete_shop(self, shop_id: int) -> ShopDelete:
+        try:
+            result = await self.repository.delete_one(shop_id)
+            await self.repository.session.commit()
+        except StatementError:
+            raise ShopCannotBaDeleted
+        except NoResultFound:
+            raise ShopNotFound
+        return ShopDelete.model_validate(result, from_attributes=True)

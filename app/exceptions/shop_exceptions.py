@@ -9,3 +9,8 @@ class ShopNotFound(BaseExceptions):
 class ShopBadParameters(BaseExceptions):
     status_code: int = 400
     detail: str = "Invalid parameters or existing shop name or ip address passed"
+
+
+class ShopCannotBaDeleted(BaseExceptions):
+    status_code: int = 409
+    detail: str = "Shop cannot be deleted"

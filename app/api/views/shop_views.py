@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.services import ShopService
-from app.schemas import ShopOut, ShopIn, ShopUpd
+from app.schemas import ShopOut, ShopIn, ShopUpd, ShopDelete
 from app.api.dependencies import check_role_dep
 
 
@@ -41,3 +41,12 @@ async def update_shop(
         shop_service: ShopService = Depends(ShopService)
 ) -> ShopOut:
     return await shop_service.update_shop(shop_id, shop)
+
+
+@shop_router.delete("/{shop_id}/delete",
+                    summary='Удалить магазин')
+async def delete_shop(
+        shop_id: int,
+        shop_service: ShopService = Depends(ShopService)
+) -> ShopDelete:
+    return await shop_service.delete_shop(shop_id)

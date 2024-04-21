@@ -17,3 +17,7 @@ class ShopUpd(BaseModel):
 
 class ShopOut(ShopIn):
     id: int
+
+
+class ShopDelete(ShopUpd):
+    id: int
