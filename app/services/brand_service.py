@@ -1,6 +1,8 @@
-from app.exceptions import BrandNotFound, BrandAlreadyExist
+from sqlalchemy.exc import NoResultFound, StatementError
+
+from app.exceptions import BrandNotFound, BrandAlreadyExist, BrandCannotBeDeleted
 from app.repositories import BrandRepository
-from app.schemas import BrandUpdIn, BrandNewIn, BrandName, BrandId, BrandNewOut, BrandUpdOut
+from app.schemas import BrandUpdIn, BrandNewIn, BrandName, BrandId, BrandNewOut, BrandUpdOut, BrandDelete
 from app.services import BaseService
 
 
@@ -33,3 +35,13 @@ class BrandService(BaseService):
         result = await self.repository.edit_one(brand.id, brand_name=brand.brand_name)
         await self.repository.session.commit()
         return BrandUpdOut.model_validate(result, from_attributes=True)
+
+    async def delete_brand(self, brand_id: int) -> BrandDelete:
+        try:
+            result = await self.repository.delete_one(brand_id)
+            await self.repository.session.commit()
+        except NoResultFound:
+            raise BrandNotFound
+        except StatementError:
+            raise BrandCannotBeDeleted
+        return BrandDelete.model_validate(result, from_attributes=True)

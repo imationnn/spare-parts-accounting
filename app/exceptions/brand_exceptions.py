@@ -9,3 +9,8 @@ class BrandNotFound(BaseExceptions):
 class BrandAlreadyExist(BaseExceptions):
     status_code: int = 409
     detail: str = "Brand already exist"
+
+
+class BrandCannotBeDeleted(BaseExceptions):
+    status_code: int = 409
+    detail: str = "Brand cannot be deleted"

@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, delete
 
 from app.models import Base
 
@@ -26,5 +26,10 @@ class BaseRepository:
 
     async def edit_one(self, _id: int, **data) -> Base:
         stmt = update(self.model).values(**data).filter_by(id=_id).returning(self.model)
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
+
+    async def delete_one(self, _id: int) -> Base:
+        stmt = delete(self.model).where(self.model.id == _id).returning(self.model)
         result = await self.session.execute(stmt)
         return result.scalar_one()

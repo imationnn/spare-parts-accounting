@@ -1,4 +1,4 @@
-from .brand_schema import BrandId, BrandUpdIn, BrandNewIn, BrandName, BrandNewOut, BrandUpdOut
+from .brand_schema import BrandId, BrandUpdIn, BrandNewIn, BrandName, BrandNewOut, BrandUpdOut, BrandDelete
 from .margin_schema import Margin
 from .catalog_schema import CatalogIn, CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogInOut
 from .auth_schema import Tokens, GetMe

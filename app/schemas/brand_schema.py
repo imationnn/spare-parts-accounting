@@ -23,3 +23,7 @@ class BrandUpdIn(BrandNewIn, BrandId):
 
 class BrandUpdOut(BrandNewIn, BrandId):
     pass
+
+
+class BrandDelete(BrandNewOut):
+    pass

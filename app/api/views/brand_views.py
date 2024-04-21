@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.services import BrandService
-from app.schemas import BrandUpdIn, BrandId, BrandName, BrandNewIn, BrandNewOut, BrandUpdOut
+from app.schemas import BrandUpdIn, BrandId, BrandName, BrandNewIn, BrandNewOut, BrandUpdOut, BrandDelete
 from app.api.dependencies import token_dep
 
 
@@ -32,3 +32,9 @@ async def add_new_brand(brand_name: BrandNewIn, brand_service: BrandService = De
                     summary='Изменить название бренда')
 async def edit_brand(brand: BrandUpdIn, brand_service: BrandService = Depends(BrandService)) -> BrandUpdOut:
     return await brand_service.edit_brand(brand)
+
+
+@brand_router.delete("/delete",
+                     summary='Удалить бренд')
+async def delete_brand(brand_id: int, brand_service: BrandService = Depends(BrandService)) -> BrandDelete:
+    return await brand_service.delete_brand(brand_id)
