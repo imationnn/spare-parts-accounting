@@ -1,17 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.models import Roles
-from app.services import MarginService, CheckRole
+from app.services import MarginService
 from app.schemas import Margin
+from app.api.dependencies import check_role_dep
 
 
-margin_router = APIRouter(
-    prefix='/margins',
-    tags=['Наценки'],
-    dependencies=[Depends(CheckRole([
-        Roles.admin["id"],
-        Roles.director["id"]
-    ]))])
+margin_router = APIRouter(prefix='/margins', tags=['Наценки'], dependencies=[check_role_dep])
 
 
 @margin_router.get("/all",

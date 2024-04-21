@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.services import ShopService, CheckRole
+from app.services import ShopService
 from app.schemas import ShopOut, ShopIn, ShopUpd
-from app.models import Roles
+from app.api.dependencies import check_role_dep
 
-shop_router = APIRouter(
-    prefix='/shop',
-    tags=['Магазины'],
-    dependencies=[Depends(CheckRole([
-        Roles.admin["id"],
-        Roles.director["id"]
-    ]))])
+
+shop_router = APIRouter(prefix='/shop', tags=['Магазины'], dependencies=[check_role_dep])
 
 
 @shop_router.get("/by-id",

@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.services import BrandService, AuthHelper
+from app.services import BrandService
 from app.schemas import BrandUpdIn, BrandId, BrandName, BrandNewIn, BrandNewOut, BrandUpdOut
+from app.api.dependencies import token_dep
 
 
-brand_router = APIRouter(prefix='/brands', tags=['Бренды'], dependencies=[Depends(AuthHelper.authorize)])
+brand_router = APIRouter(prefix='/brands', tags=['Бренды'], dependencies=[token_dep])
 
 
 @brand_router.get("/by-name",

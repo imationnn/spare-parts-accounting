@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Form, Request
 
-from app.models import Roles
-from app.services import AuthService, oauth_scheme, AuthHelper, CheckRole
+from app.services import AuthService, oauth_scheme
 from app.schemas import Tokens, GetMe
+from app.api.dependencies import token_dep, check_role_dep
 
 
 auth_router = APIRouter(prefix='/auth', tags=['Аутентификация'])
@@ -28,7 +28,7 @@ async def refresh_access_token(
 
 @auth_router.get("/getme", summary="Получить информацию о себе")
 async def get_employee_info(
-        access_payload: dict = Depends(AuthHelper.authorize),
+        access_payload: dict = token_dep,
         auth_service: AuthService = Depends(AuthService)
 ) -> GetMe:
     return await auth_service.get_employee_info(access_payload)
@@ -37,6 +37,6 @@ async def get_employee_info(
 @auth_router.patch("/change-shop", status_code=204, summary="Сменить магазин")
 async def change_shop(
         shop_id: int,
-        access_payload: dict = Depends(CheckRole([Roles.admin["id"], Roles.director["id"]])),
+        access_payload: dict = check_role_dep,
         auth_service: AuthService = Depends(AuthService)):
     return await auth_service.change_shop(access_payload["employee_id"], shop_id)

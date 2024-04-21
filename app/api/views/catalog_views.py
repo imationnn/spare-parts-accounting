@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.services import CatalogService, AuthHelper
+from app.services import CatalogService
 from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
+from app.api.dependencies import token_dep
 
-catalog_router = APIRouter(prefix='/catalog', tags=['Каталог деталей'], dependencies=[Depends(AuthHelper.authorize)])
+
+catalog_router = APIRouter(prefix='/catalog', tags=['Каталог деталей'], dependencies=[token_dep])
 
 
 @catalog_router.get("/by-id",

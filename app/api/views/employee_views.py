@@ -1,16 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.services import EmployeeService, CheckRole
+from app.services import EmployeeService
 from app.schemas import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUpdOut, NewEmployeeOut
-from app.models import Roles
+from app.api.dependencies import check_role_dep
 
-employee_router = APIRouter(
-    prefix='/employee',
-    tags=['Сотрудники'],
-    dependencies=[Depends(CheckRole([
-        Roles.admin["id"],
-        Roles.director["id"]
-    ]))])
+
+employee_router = APIRouter(prefix='/employee', tags=['Сотрудники'], dependencies=[check_role_dep])
 
 
 @employee_router.get("/by-login",

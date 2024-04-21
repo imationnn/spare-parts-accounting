@@ -28,10 +28,9 @@ class EmployeeService(BaseService):
     async def add_new_employee(self, employee: NewEmployee) -> NewEmployeeOut:
         if await self.repository.get_employee(login=employee.login):
             raise EmployeeAlreadyExist
-        values = employee.model_dump(exclude_none=True)
-        values["password"] = AuthHelper.get_hash_password(values["password"])
+        employee.password = AuthHelper.get_hash_password(employee.password)
         try:
-            result = await self.repository.add_one(**values)
+            result = await self.repository.add_one(**employee.model_dump(exclude_none=True))
             await self.repository.session.commit()
         except (StatementError, NoResultFound):
             raise EmployeeBadParameters
@@ -42,8 +41,8 @@ class EmployeeService(BaseService):
         if not values:
             raise EmployeeBadParameters
 
-        if password := values.get("password"):
-            values["password"] = AuthHelper.get_hash_password(password)
+        if employee.password:
+            values["password"] = AuthHelper.get_hash_password(employee.password)
 
         try:
             result = await self.repository.update_employee(employee_id, **values)
