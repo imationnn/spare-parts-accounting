@@ -32,7 +32,7 @@ class EmployeeService(BaseService):
         try:
             result = await self.repository.add_one(**employee.model_dump(exclude_none=True))
             await self.repository.session.commit()
-        except (StatementError, NoResultFound):
+        except StatementError:
             raise EmployeeBadParameters
         return NewEmployeeOut.model_validate(result, from_attributes=True)
 
@@ -47,6 +47,8 @@ class EmployeeService(BaseService):
         try:
             result = await self.repository.update_employee(employee_id, **values)
             await self.repository.session.commit()
-        except (StatementError, NoResultFound):
+        except StatementError:
             raise EmployeeBadParameters
+        except NoResultFound:
+            raise EmployeeNotFound
         return EmployeeUpdOut.model_validate(result, from_attributes=True)

@@ -1,17 +1,15 @@
 import re
 
-from fastapi import Depends
 from sqlalchemy.exc import NoResultFound, StatementError
 
 from app.repositories import CatalogRepository
 from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
 from app.exceptions import PartNotFound, PartBadParameters
+from app.services import BaseService
 
 
-class CatalogService:
-
-    def __init__(self, repository: CatalogRepository = Depends(CatalogRepository)):
-        self.repository = repository
+class CatalogService(BaseService):
+    repository = CatalogRepository()
 
     @staticmethod
     def normalize_number(number: str) -> str | None:
@@ -35,22 +33,24 @@ class CatalogService:
         if not values:
             raise PartBadParameters
 
-        if number := values.get("number"):
-            values["search_id"] = self.normalize_number(number)
+        if part.number:
+            values["search_id"] = self.normalize_number(part.number)
 
         try:
             result = await self.repository.edit_one(part_id, **values)
             await self.repository.session.commit()
-        except (StatementError, NoResultFound):
+        except StatementError:
             raise PartBadParameters
+        except NoResultFound:
+            raise PartNotFound
         return CatalogUpdOut.model_validate(result, from_attributes=True)
 
     async def add_part(self, part: CatalogIn) -> CatalogInOut:
         values = part.model_dump(exclude_none=True)
-        values["search_id"] = self.normalize_number(values["number"])
+        values["search_id"] = self.normalize_number(part.number)
         try:
             result = await self.repository.add_one(**values)
             await self.repository.session.commit()
-        except (StatementError, NoResultFound):
+        except StatementError:
             raise PartBadParameters
         return CatalogInOut.model_validate(result, from_attributes=True)

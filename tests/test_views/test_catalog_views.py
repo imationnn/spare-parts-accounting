@@ -146,8 +146,8 @@ async def test_add_part(client: AsyncClient, new_part: dict, status_code: int, r
      {"number": "157907437",
       "desc_eng": "Brake pads",
       },
-     400,
-     {"detail": "Invalid parameters or existing part number passed"}
+     404,
+     {"detail": "Part number not found"}
      ),
     (3,
      {},
