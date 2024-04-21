@@ -34,7 +34,7 @@ async def edit_brand(brand: BrandUpdIn, brand_service: BrandService = Depends(Br
     return await brand_service.edit_brand(brand)
 
 
-@brand_router.delete("/delete",
+@brand_router.delete("/{part_id}/delete",
                      summary='Удалить бренд')
 async def delete_brand(brand_id: int, brand_service: BrandService = Depends(BrandService)) -> BrandDelete:
     return await brand_service.delete_brand(brand_id)

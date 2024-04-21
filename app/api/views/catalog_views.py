@@ -43,7 +43,7 @@ async def edit_part(part_id: int,
     return await catalog_service.update_part(part_id, part)
 
 
-@catalog_router.delete("/delete",
+@catalog_router.delete("/{part_id}/delete",
                        summary='Удалить деталь')
 async def delete_part(part_id: int,
                       catalog_service: CatalogService = Depends(CatalogService)) -> CatalogDelete:
