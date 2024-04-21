@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends
 
 from app.services import CatalogService
-from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
+from app.schemas import (CatalogOutById,
+                         CatalogOutByNumber,
+                         CatalogUpdIn,
+                         CatalogUpdOut,
+                         CatalogIn,
+                         CatalogInOut,
+                         CatalogDelete)
 from app.api.dependencies import token_dep
 
 
@@ -35,3 +41,10 @@ async def edit_part(part_id: int,
                     part: CatalogUpdIn,
                     catalog_service: CatalogService = Depends(CatalogService)) -> CatalogUpdOut:
     return await catalog_service.update_part(part_id, part)
+
+
+@catalog_router.delete("/delete",
+                       summary='Удалить деталь')
+async def delete_part(part_id: int,
+                      catalog_service: CatalogService = Depends(CatalogService)) -> CatalogDelete:
+    return await catalog_service.delete_part(part_id)

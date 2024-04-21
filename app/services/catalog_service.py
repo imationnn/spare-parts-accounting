@@ -3,8 +3,14 @@ import re
 from sqlalchemy.exc import NoResultFound, StatementError
 
 from app.repositories import CatalogRepository
-from app.schemas import CatalogOutById, CatalogOutByNumber, CatalogUpdIn, CatalogUpdOut, CatalogIn, CatalogInOut
-from app.exceptions import PartNotFound, PartBadParameters
+from app.schemas import (CatalogOutById,
+                         CatalogOutByNumber,
+                         CatalogUpdIn,
+                         CatalogUpdOut,
+                         CatalogIn,
+                         CatalogInOut,
+                         CatalogDelete)
+from app.exceptions import PartNotFound, PartBadParameters, PartCannotBeDeleted
 from app.services import BaseService
 
 
@@ -54,3 +60,13 @@ class CatalogService(BaseService):
         except StatementError:
             raise PartBadParameters
         return CatalogInOut.model_validate(result, from_attributes=True)
+
+    async def delete_part(self, part_id: int) -> CatalogDelete:
+        try:
+            result = await self.repository.delete_one(part_id)
+            await self.repository.session.commit()
+        except StatementError:
+            raise PartCannotBeDeleted
+        except NoResultFound:
+            raise PartNotFound
+        return CatalogDelete.model_validate(result, from_attributes=True)

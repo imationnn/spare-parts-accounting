@@ -9,3 +9,8 @@ class PartNotFound(BaseExceptions):
 class PartBadParameters(BaseExceptions):
     status_code: int = 400
     detail: str = "Invalid parameters or existing part number passed"
+
+
+class PartCannotBeDeleted(BaseExceptions):
+    status_code: int = 409
+    detail: str = "Part cannot be deleted"

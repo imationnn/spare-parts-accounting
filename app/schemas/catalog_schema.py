@@ -49,3 +49,7 @@ class CatalogUpdOut(Catalog):
 
 class CatalogInOut(CatalogUpdOut):
     pass
+
+
+class CatalogDelete(CatalogUpdIn):
+    pass
