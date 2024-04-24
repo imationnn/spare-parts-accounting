@@ -4,3 +4,4 @@ from .catalog_views import catalog_router
 from .auth_views import auth_router
 from .employee_views import employee_router
 from .shop_views import shop_router
+from .supplier_views import supplier_router
