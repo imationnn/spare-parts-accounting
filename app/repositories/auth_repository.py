@@ -17,8 +17,7 @@ class EmployeeCache:
 
 
 class EmployeeCacheRepository:
-    def __init__(self, redis: Redis = redis_db()):
-        self.redis = redis
+    redis: Redis = redis_db()
 
     async def create_employee_cache(self, employee_id: str | int, shop: Shop | None, refresh_token: str):
         if shop:
@@ -43,7 +42,7 @@ class EmployeeCacheRepository:
         return emp_cache
 
 
-class AuthRepository(EmployeeRepository, EmployeeCacheRepository):
+class AuthRepository(EmployeeRepository):
 
     async def get_user_by_login_for_auth(
             self,

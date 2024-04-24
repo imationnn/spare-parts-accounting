@@ -10,11 +10,11 @@ class ShopRepository(BaseRepository):
     async def get_shop(self, **filter_by) -> model | None:
         return await self.get_one(**filter_by)
 
-    async def get_all_shops(self) -> Sequence[model | Base]:
+    async def get_all_shops(self) -> Sequence[model]:
         return await self.get_multi()
 
-    async def add_shop(self, **data):
+    async def add_shop(self, **data) -> model:
         return await self.add_one(**data)
 
-    async def edit_shop(self, shop_id: int, **data):
+    async def edit_shop(self, shop_id: int, **data) -> model:
         return await self.edit_one(shop_id, **data)

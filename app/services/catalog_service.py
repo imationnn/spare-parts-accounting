@@ -1,5 +1,6 @@
 import re
 
+from fastapi import Depends
 from sqlalchemy.exc import NoResultFound, StatementError
 
 from app.repositories import CatalogRepository
@@ -11,11 +12,12 @@ from app.schemas import (CatalogOutById,
                          CatalogInOut,
                          CatalogDelete)
 from app.exceptions import PartNotFound, PartBadParameters, PartCannotBeDeleted
-from app.services import BaseService
 
 
-class CatalogService(BaseService):
-    repository = CatalogRepository()
+class CatalogService:
+
+    def __init__(self, repository: CatalogRepository = Depends()):
+        self.repository = repository
 
     @staticmethod
     def normalize_number(number: str) -> str | None:

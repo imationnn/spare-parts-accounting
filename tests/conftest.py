@@ -50,7 +50,7 @@ async def prepare_database_value():
         await insert_test_data(async_session)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 async def session() -> AsyncSession:
     async with test_db_connector.session_factory() as session:
         yield session

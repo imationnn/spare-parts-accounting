@@ -29,5 +29,5 @@ class EmployeeRepository(BaseRepository):
         result = await self.session.scalars(stmt)
         return result.all()
 
-    async def update_employee(self, employee_id: int, **update):
+    async def update_employee(self, employee_id: int, **update) -> model:
         return await self.edit_one(employee_id, **update)

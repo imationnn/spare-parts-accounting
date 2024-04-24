@@ -1,13 +1,15 @@
+from fastapi import Depends
 from sqlalchemy.exc import StatementError, NoResultFound
 
 from app.repositories import ShopRepository
 from app.schemas import ShopOut, ShopIn, ShopUpd, ShopDelete
-from app.services import BaseService
 from app.exceptions import ShopBadParameters, ShopNotFound, ShopCannotBaDeleted
 
 
-class ShopService(BaseService):
-    repository = ShopRepository()
+class ShopService:
+
+    def __init__(self, repository: ShopRepository = Depends()):
+        self.repository = repository
 
     async def get_shop_by_id(self, shop_id: int) -> ShopOut:
         result = await self.repository.get_shop(id=shop_id)

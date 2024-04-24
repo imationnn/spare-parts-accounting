@@ -1,13 +1,15 @@
+from fastapi import Depends
 from sqlalchemy.exc import NoResultFound, StatementError
 
 from app.exceptions import BrandNotFound, BrandAlreadyExist, BrandCannotBeDeleted
 from app.repositories import BrandRepository
 from app.schemas import BrandUpdIn, BrandNewIn, BrandName, BrandId, BrandNewOut, BrandUpdOut, BrandDelete
-from app.services import BaseService
 
 
-class BrandService(BaseService):
-    repository = BrandRepository()
+class BrandService:
+
+    def __init__(self, repository: BrandRepository = Depends()):
+        self.repository = repository
 
     async def get_brand_by_name(self, brand_name: str) -> BrandId:
         result = await self.repository.get_one(brand_name=brand_name)
