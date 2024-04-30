@@ -19,4 +19,10 @@ class SupplierIn(BaseModel):
 
 class SupplierOut(SupplierIn):
     id: int
-    org_attr_id: int | None
+    org_attr_id: int
+
+
+class SupplierListOut(BaseModel):
+    id: int
+    org_name: str
+    org_attr_id: int

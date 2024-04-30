@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Depends
 
 from app.repositories import SupplierRepository, OrganizationAttrRepository
-from app.schemas import SupplierOut, SupplierIn
+from app.schemas import SupplierOut, SupplierIn, SupplierListOut
 
 
 class SupplierService:
@@ -20,6 +20,10 @@ class SupplierService:
             raise HTTPException(404)
         return SupplierOut.model_validate(result, from_attributes=True)
 
+    async def get_all_suppliers(self, limit: int = 500, offset: int = 0) -> list[SupplierListOut]:
+        result = await self.repository.get_multi(limit=limit, offset=offset)
+        return [SupplierListOut.model_validate(item, from_attributes=True) for item in result]
+
     async def add_new_supplier(self, supplier: SupplierIn) -> SupplierOut:
         attr_model = await self.org_attr_repository.add_organization_attrs(
             **supplier.org_attr.model_dump(exclude_none=True)
@@ -31,3 +35,6 @@ class SupplierService:
         sup_model.org_attr = attr_model
         await self.repository.session.commit()
         return SupplierOut.model_validate(sup_model, from_attributes=True)
+
+    async def update_supplier(self):
+        pass
