@@ -31,7 +31,7 @@ class ShopService:
         return ShopOut.model_validate(result, from_attributes=True)
 
     async def update_shop(self, shop_id: int, shop: ShopUpd) -> ShopOut:
-        values = shop.model_dump(exclude_none=True)
+        values = shop.model_dump(exclude_unset=True)
         if not values:
             raise ShopBadParameters
         try:

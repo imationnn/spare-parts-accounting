@@ -40,7 +40,7 @@ class EmployeeService:
         return NewEmployeeOut.model_validate(result, from_attributes=True)
 
     async def edit_employee(self, employee_id: int, employee: EmployeeUpdIn) -> EmployeeUpdOut:
-        values = employee.model_dump(exclude_none=True)
+        values = employee.model_dump(exclude_unset=True)
         if not values:
             raise EmployeeBadParameters
 

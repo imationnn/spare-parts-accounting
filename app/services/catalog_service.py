@@ -37,7 +37,7 @@ class CatalogService:
         return [CatalogOutByNumber.model_validate(item, from_attributes=True) for item in result]
 
     async def update_part(self, part_id: int, part: CatalogUpdIn) -> CatalogUpdOut:
-        values = part.model_dump(exclude_none=True)
+        values = part.model_dump(exclude_unset=True)
         if not values:
             raise PartBadParameters
 
