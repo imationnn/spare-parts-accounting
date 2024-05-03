@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
-from pydantic import Field
 
 from app.services import SupplierService
-from app.schemas import SupplierOut, SupplierIn, SupplierListOut
+from app.schemas import SupplierOut, SupplierIn, SupplierListOut, SupplierUpdate
 from app.api.dependencies import token_dep
 
 
@@ -35,3 +34,13 @@ async def add_new_supplier(
         supplier_service: SupplierService = Depends(SupplierService)
 ) -> SupplierOut:
     return await supplier_service.add_new_supplier(supplier)
+
+
+@supplier_router.patch("/update",
+                       summary='Обновить информацию о поставщике')
+async def update_supplier(
+        supplier_id: int,
+        supplier: SupplierUpdate,
+        supplier_service: SupplierService = Depends(SupplierService)
+) -> SupplierOut:
+    return await supplier_service.update_supplier(supplier_id, supplier)

@@ -26,3 +26,7 @@ class SupplierListOut(BaseModel):
     id: int
     org_name: str
     org_attr_id: int
+
+
+class SupplierUpdate(SupplierIn):
+    org_name: str | None = None
