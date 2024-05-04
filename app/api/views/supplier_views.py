@@ -28,7 +28,8 @@ async def get_all_suppliers(
 
 
 @supplier_router.post("/new",
-                      summary='Добавить поставщика')
+                      summary='Добавить поставщика',
+                      status_code=201)
 async def add_new_supplier(
         supplier: SupplierIn,
         supplier_service: SupplierService = Depends(SupplierService)
@@ -36,7 +37,7 @@ async def add_new_supplier(
     return await supplier_service.add_new_supplier(supplier)
 
 
-@supplier_router.patch("/update",
+@supplier_router.patch("/{supplier_id}/update",
                        summary='Обновить информацию о поставщике')
 async def update_supplier(
         supplier_id: int,
@@ -44,3 +45,12 @@ async def update_supplier(
         supplier_service: SupplierService = Depends(SupplierService)
 ) -> SupplierOut:
     return await supplier_service.update_supplier(supplier_id, supplier)
+
+
+@supplier_router.delete("/{supplier_id}/delete",
+                        summary='Удалить поставщика')
+async def delete_supplier(
+        supplier_id: int,
+        supplier_service: SupplierService = Depends(SupplierService)
+) -> SupplierOut:
+    return await supplier_service.delete_supplier(supplier_id)

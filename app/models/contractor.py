@@ -19,7 +19,7 @@ class Supplier(Base):
     org_name: Mapped[str]
     org_attr_id: Mapped[int | None] = mapped_column(ForeignKey("org_attrs.id"))  # TODO убрать None и переделать добавление данных в тестах
 
-    org_attr: Mapped[OrgAttr] = relationship()
+    org_attr: Mapped[OrgAttr] = relationship(cascade="delete")
 
 
 class PhysicalClient(Base):

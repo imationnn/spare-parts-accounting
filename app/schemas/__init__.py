@@ -11,4 +11,4 @@ from .auth_schema import Tokens, GetMe
 from .employee_schema import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUpdOut, NewEmployeeOut
 from .role_schema import RoleOut
 from .shop_schema import ShopUpd, ShopIn, ShopOut, ShopDelete
-from .supplier_schema import OrgAttr, SupplierIn, SupplierOut, SupplierListOut
+from .supplier_schema import OrgAttr, SupplierIn, SupplierOut, SupplierListOut, SupplierUpdate

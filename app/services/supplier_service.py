@@ -1,8 +1,9 @@
-from fastapi import HTTPException, Depends
+from fastapi import Depends
 from sqlalchemy.exc import StatementError
 
 from app.repositories import SupplierRepository, OrganizationAttrRepository
 from app.schemas import SupplierOut, SupplierIn, SupplierListOut, SupplierUpdate
+from app.exceptions import SupplierBadParameters, SupplierNotFound
 
 
 class SupplierService:
@@ -18,7 +19,7 @@ class SupplierService:
     async def _get_supplier_by_id(self, supplier_id: int) -> SupplierRepository.model:
         result = await self.repository.get_supplier(supplier_id)
         if not result:
-            raise HTTPException(404)
+            raise SupplierNotFound
         return result
 
     async def get_supplier_by_id(self, supplier_id: int) -> SupplierOut:
@@ -49,5 +50,13 @@ class SupplierService:
                 supplier_upd.model_dump(exclude_unset=True)
             )
         except StatementError:
-            raise HTTPException(400)
+            raise SupplierBadParameters
         return SupplierOut.model_validate(updated_supplier, from_attributes=True)
+
+    async def delete_supplier(self, supplier_id: int) -> SupplierOut:
+        supplier = await self._get_supplier_by_id(supplier_id)
+        try:
+            await self.repository.delete_supplier(supplier)
+        except StatementError:
+            raise SupplierBadParameters
+        return SupplierOut.model_validate(supplier, from_attributes=True)

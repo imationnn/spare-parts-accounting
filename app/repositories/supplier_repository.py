@@ -26,3 +26,7 @@ class SupplierRepository(BaseRepository):
         self.session.add(supplier_model)
         await self.session.commit()
         return supplier_model
+
+    async def delete_supplier(self, supplier_model: Supplier):
+        await self.session.delete(supplier_model)
+        await self.session.commit()
