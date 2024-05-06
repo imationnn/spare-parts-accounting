@@ -6,7 +6,7 @@ from .base import Base, created_at, def_false, num_20_2
 
 class NewArrival(Base):
     invoice_number: Mapped[str] = mapped_column(unique=True)
-    invoice_data: Mapped[str]
+    invoice_date: Mapped[str]
     created_at: Mapped[created_at]
     shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
