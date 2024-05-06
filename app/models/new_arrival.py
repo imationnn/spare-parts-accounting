@@ -1,7 +1,13 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, created_at, def_false, num_20_2
+
+
+if TYPE_CHECKING:
+    from app.models import Employee, Supplier
 
 
 class NewArrival(Base):
@@ -13,6 +19,9 @@ class NewArrival(Base):
     supplier_id: Mapped[int] = mapped_column(ForeignKey("suppliers.id"))
     total_price: Mapped[num_20_2] = mapped_column(default=0, server_default="0")
     is_transferred: Mapped[def_false]
+
+    employee: Mapped["Employee"] = relationship()
+    supplier: Mapped["Supplier"] = relationship()
 
 
 class NewArrivalDetail(Base):
