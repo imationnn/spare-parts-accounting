@@ -5,3 +5,4 @@ from .auth_service import AuthService, AuthHelper, CheckRole, oauth_scheme
 from .employee_service import EmployeeService
 from .shop_service import ShopService
 from .supplier_service import SupplierService
+from .new_arrival_service import NewArrivalService
