@@ -8,7 +8,10 @@ from app.api.dependencies import token_dep, check_role_dep
 auth_router = APIRouter(prefix='/auth', tags=['Аутентификация'])
 
 
-@auth_router.post("/login", summary="Получить токен по логину и паролю")
+@auth_router.post(
+    "/login",
+    summary="Получить токен по логину и паролю"
+)
 async def login(
         request: Request,
         username: str = Form(description="логин"),
@@ -18,7 +21,11 @@ async def login(
     return await auth_service.validate_employee(username, password, request.client.host)
 
 
-@auth_router.post("/refresh", response_model_exclude_none=True, summary="Обновить access токен")
+@auth_router.post(
+    "/refresh",
+    response_model_exclude_none=True,
+    summary="Обновить access токен"
+)
 async def refresh_access_token(
         refresh_token: str = Depends(oauth_scheme),
         auth_service: AuthService = Depends(AuthService)
@@ -26,7 +33,10 @@ async def refresh_access_token(
     return await auth_service.refresh_token(refresh_token)
 
 
-@auth_router.get("/getme", summary="Получить информацию о себе")
+@auth_router.get(
+    "/getme",
+    summary="Получить информацию о себе"
+)
 async def get_employee_info(
         access_payload: dict = token_dep,
         auth_service: AuthService = Depends(AuthService)
@@ -34,7 +44,11 @@ async def get_employee_info(
     return await auth_service.get_employee_info(access_payload)
 
 
-@auth_router.patch("/change-shop", status_code=204, summary="Сменить магазин")
+@auth_router.patch(
+    "/change-shop",
+    status_code=204,
+    summary="Сменить магазин"
+)
 async def change_shop(
         shop_id: int,
         access_payload: dict = check_role_dep,

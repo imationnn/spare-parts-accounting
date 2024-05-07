@@ -8,8 +8,10 @@ from app.api.dependencies import token_dep
 supplier_router = APIRouter(prefix='/supplier', tags=['Поставщики'], dependencies=[token_dep])
 
 
-@supplier_router.get("/by-id",
-                     summary='Получить информацию о поставщике по id')
+@supplier_router.get(
+    "/by-id",
+    summary='Получить информацию о поставщике по id'
+)
 async def get_supplier_by_id(
         supplier_id: int,
         supplier_service: SupplierService = Depends(SupplierService)
@@ -17,8 +19,10 @@ async def get_supplier_by_id(
     return await supplier_service.get_supplier_by_id(supplier_id)
 
 
-@supplier_router.get("/all",
-                     summary='Получить всех поставщиков')
+@supplier_router.get(
+    "/all",
+    summary='Получить всех поставщиков'
+)
 async def get_all_suppliers(
         limit: int = 500,
         offset: int = 0,
@@ -27,9 +31,11 @@ async def get_all_suppliers(
     return await supplier_service.get_all_suppliers(limit, offset)
 
 
-@supplier_router.post("/new",
-                      summary='Добавить поставщика',
-                      status_code=201)
+@supplier_router.post(
+    "/new",
+    summary='Добавить поставщика',
+    status_code=201
+)
 async def add_new_supplier(
         supplier: SupplierIn,
         supplier_service: SupplierService = Depends(SupplierService)
@@ -37,8 +43,10 @@ async def add_new_supplier(
     return await supplier_service.add_new_supplier(supplier)
 
 
-@supplier_router.patch("/{supplier_id}/update",
-                       summary='Обновить информацию о поставщике')
+@supplier_router.patch(
+    "/{supplier_id}/update",
+    summary='Обновить информацию о поставщике'
+)
 async def update_supplier(
         supplier_id: int,
         supplier: SupplierUpdate,
@@ -47,8 +55,11 @@ async def update_supplier(
     return await supplier_service.update_supplier(supplier_id, supplier)
 
 
-@supplier_router.delete("/{supplier_id}/delete",
-                        summary='Удалить поставщика')
+@supplier_router.delete(
+    "/{supplier_id}/delete",
+    summary='Удалить поставщика',
+    description="Удалить поставщика можно только если от него не было поступлений."
+)
 async def delete_supplier(
         supplier_id: int,
         supplier_service: SupplierService = Depends(SupplierService)
