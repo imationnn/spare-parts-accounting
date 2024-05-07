@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 
 from app.services import NewArrivalService
-from app.schemas import NewArrivalOut
+from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut
 from app.api.dependencies import token_dep
 from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET
 
@@ -22,7 +22,8 @@ class DescriptionQueryArrival:
 @arrive_router.get(
     "/list-arrivals",
     summary="Получить список новых поступлений",
-    description="Максимальный диапазон между начальной и конечной датой - 366 дней")
+    description="Максимальный диапазон между начальной и конечной датой - 366 дней"
+)
 async def get_list_arrivals(
         from_date: datetime = Query(default=None, description=DescriptionQueryArrival.from_date),
         to_date: datetime = Query(default=None, description=DescriptionQueryArrival.to_date),
@@ -30,10 +31,10 @@ async def get_list_arrivals(
         sort_by: Literal["id", "created_at"] = Query(default="id", description=DescriptionQueryArrival.sort_by),
         limit: int = Query(default=300, le=300),
         offset: int = 0,
-        supplier_service: NewArrivalService = Depends(),
+        arrival_service: NewArrivalService = Depends(),
         token_payload: dict = token_dep
 ) -> list[NewArrivalOut]:
-    return await supplier_service.get_arrivals(
+    return await arrival_service.get_arrivals(
         from_date=from_date,
         to_date=to_date,
         is_transferred=is_transferred,
@@ -42,3 +43,16 @@ async def get_list_arrivals(
         offset=offset,
         token_payload=token_payload
     )
+
+
+@arrive_router.post(
+    "/create",
+    summary="Создать новое поступление",
+    description="Номер накладной у одного поставщика должен быть уникальным."
+)
+async def create_new_arrival(
+        new_arrival: NewArrivalIn,
+        arrival_service: NewArrivalService = Depends(),
+        token_payload: dict = token_dep
+) -> ArrivalNewOut:
+    return await arrival_service.create_new_arrive(new_arrival, token_payload)

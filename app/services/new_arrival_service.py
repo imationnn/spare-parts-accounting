@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException
+from sqlalchemy.exc import StatementError
 
 from app.repositories import NewArrivalRepository, NewArrivalDetailRepository, EmployeeCacheRepository
-from app.schemas import NewArrivalOut, NewArrivalIn
+from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
 
@@ -57,8 +58,19 @@ class NewArrivalService:
     async def get_arr_details_by_arrive_id(self) -> list:
         pass
 
-    async def create_new_arrive(self, new_arrive: NewArrivalIn):
-        pass
+    async def create_new_arrive(self, new_arrive: NewArrivalIn, token_payload: dict) -> ArrivalNewOut:
+        employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
+        emp_cache = await self.emp_cache_repository.get_employee_cache(employee_id)
+        try:
+            result = await self.new_arr_repository.create_new_arrival(
+                emp_cache.shop_id,
+                employee_id,
+                new_arrive.model_dump()
+            )
+            await self.new_arr_repository.session.commit()
+        except StatementError:
+            raise HTTPException(400)
+        return ArrivalNewOut.model_validate(result, from_attributes=True)
 
     async def add_new_arr_detail(self):
         pass

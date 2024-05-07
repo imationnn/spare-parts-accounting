@@ -32,6 +32,9 @@ class NewArrivalRepository(BaseRepository):
         result = await self.session.scalars(stmt)
         return result.all()
 
+    async def create_new_arrival(self, shop_id: int, employee_id: int, values: dict) -> model:
+        return await self.add_one(shop_id=shop_id, employee_id=employee_id, **values)
+
 
 class NewArrivalDetailRepository(BaseRepository):
     model = NewArrivalDetail

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, created_at, def_false, num_20_2
@@ -11,7 +11,13 @@ if TYPE_CHECKING:
 
 
 class NewArrival(Base):
-    invoice_number: Mapped[str] = mapped_column(unique=True)
+    __table_args__ = (
+        UniqueConstraint(
+            "invoice_number",
+            "supplier_id",
+            name="arrival_unique"),
+    )
+    invoice_number: Mapped[str]
     invoice_date: Mapped[str]
     created_at: Mapped[created_at]
     shop_id: Mapped[int] = mapped_column(ForeignKey("shops.id"))

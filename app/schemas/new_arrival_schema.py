@@ -16,15 +16,18 @@ class Supplier(SupplierListOut):
 
 class NewArrivalIn(BaseModel):
     invoice_number: str = Field(min_length=2, max_length=30)
-    invoice_date: str
+    invoice_date: str = Field(examples=["15.01.2024"])
     supplier_id: int
-    total_price: num_20_2
+    total_price: num_20_2 = Field(default=0)
 
 
-class NewArrivalOut(NewArrivalIn):
+class ArrivalNewOut(NewArrivalIn):
     id: int
     created_at: datetime
     shop_id: int
     is_transferred: bool
+
+
+class NewArrivalOut(ArrivalNewOut):
     employee: Employee
     supplier: Supplier
