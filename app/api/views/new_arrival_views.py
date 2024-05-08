@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 
 from app.services import NewArrivalService
-from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut
+from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut, NewArrivalDetailIn, NewArrivalDetailOut
 from app.api.dependencies import token_dep
 from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET
 
@@ -56,3 +56,15 @@ async def create_new_arrival(
         token_payload: dict = token_dep
 ) -> ArrivalNewOut:
     return await arrival_service.create_new_arrive(new_arrival, token_payload)
+
+
+@arrive_router.post(
+    "/detail/add",
+    summary="Добавить позицию в поступление."
+)
+async def add_arrival_detail(
+        new_arrival_detail: NewArrivalDetailIn,
+        arrival_service: NewArrivalService = Depends(),
+        token_payload: dict = token_dep
+) -> NewArrivalDetailOut:
+    return await arrival_service.add_new_arr_detail(new_arrival_detail, token_payload)

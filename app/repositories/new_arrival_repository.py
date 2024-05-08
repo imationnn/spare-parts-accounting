@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Sequence
 
 from sqlalchemy import select, and_
@@ -38,3 +39,25 @@ class NewArrivalRepository(BaseRepository):
 
 class NewArrivalDetailRepository(BaseRepository):
     model = NewArrivalDetail
+
+    async def add_new_arrive_detail(
+            self,
+            part_id: int,
+            qty: int,
+            price_in: Decimal,
+            price_out: Decimal,
+            amount: Decimal,
+            employee_id: int,
+            ccd: str,
+            arrive_id: int
+    ) -> model:
+        return await self.add_one(
+            part_id=part_id,
+            qty=qty,
+            price_in=price_in,
+            price_out=price_out,
+            amount=amount,
+            employee_id=employee_id,
+            ccd=ccd,
+            arrive_id=arrive_id
+        )

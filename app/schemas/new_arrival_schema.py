@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -12,6 +14,11 @@ class Employee(BaseModel):
 
 class Supplier(SupplierListOut):
     pass
+
+
+class Part(BaseModel):
+    part_id: int
+    margin_value: Decimal = Field(ge=1, decimal_places=2)
 
 
 class NewArrivalIn(BaseModel):
@@ -31,3 +38,24 @@ class ArrivalNewOut(NewArrivalIn):
 class NewArrivalOut(ArrivalNewOut):
     employee: Employee
     supplier: Supplier
+
+
+class NewArrivalDetail(BaseModel):
+    qty: int
+    amount: num_20_2
+    ccd: str | None = None
+    arrive_id: int
+
+
+class NewArrivalDetailIn(NewArrivalDetail):
+    part: Part
+
+
+class NewArrivalDetailOut(NewArrivalDetail):
+    id: int
+    part_id: int
+    created_at: datetime
+    price_in: num_20_2
+    price_out: num_20_2
+    currency: str
+    employee_id: int

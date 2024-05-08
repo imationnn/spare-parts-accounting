@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.exc import StatementError
 
 from app.repositories import NewArrivalRepository, NewArrivalDetailRepository, EmployeeCacheRepository
-from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut
+from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut, NewArrivalDetailIn, NewArrivalDetailOut
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
 
@@ -72,8 +72,22 @@ class NewArrivalService:
             raise HTTPException(400)
         return ArrivalNewOut.model_validate(result, from_attributes=True)
 
-    async def add_new_arr_detail(self):
-        pass
+    async def add_new_arr_detail(self, new_arrive_det: NewArrivalDetailIn, token_payload: dict) -> NewArrivalDetailOut:
+        employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
+        price_in = new_arrive_det.amount / new_arrive_det.qty
+        price_out = round(price_in * new_arrive_det.part.margin_value)
+        result = await self.new_arr_det_repository.add_new_arrive_detail(
+            part_id=new_arrive_det.part.part_id,
+            qty=new_arrive_det.qty,
+            price_in=price_in,
+            price_out=price_out,
+            amount=new_arrive_det.amount,
+            employee_id=employee_id,
+            ccd=new_arrive_det.ccd,
+            arrive_id=new_arrive_det.arrive_id
+        )
+        await self.new_arr_det_repository.session.commit()
+        return NewArrivalDetailOut.model_validate(result, from_attributes=True)
 
     async def update_arrive(self):
         pass
