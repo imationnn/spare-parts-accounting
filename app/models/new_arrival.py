@@ -7,7 +7,7 @@ from .base import Base, created_at, def_false, num_20_2
 
 
 if TYPE_CHECKING:
-    from app.models import Employee, Supplier
+    from app.models import Employee, Supplier, CatalogPart
 
 
 class NewArrival(Base):
@@ -31,7 +31,7 @@ class NewArrival(Base):
 
 
 class NewArrivalDetail(Base):
-    part_id: Mapped[int]
+    part_id: Mapped[int] = mapped_column(ForeignKey("catalog_parts.id"))
     created_at: Mapped[created_at]
     qty: Mapped[int]
     price_in: Mapped[num_20_2]
@@ -41,3 +41,6 @@ class NewArrivalDetail(Base):
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
     ccd: Mapped[str | None]
     arrive_id: Mapped[int] = mapped_column(ForeignKey("new_arrivals.id"))
+
+    part: Mapped["CatalogPart"] = relationship()
+    employee: Mapped["Employee"] = relationship()

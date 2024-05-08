@@ -12,4 +12,9 @@ from .employee_schema import NewEmployee, EmployeeOut, EmployeeUpdIn, EmployeeUp
 from .role_schema import RoleOut
 from .shop_schema import ShopUpd, ShopIn, ShopOut, ShopDelete
 from .supplier_schema import OrgAttr, SupplierIn, SupplierOut, SupplierListOut, SupplierUpdate
-from .new_arrival_schema import NewArrivalIn, NewArrivalOut, ArrivalNewOut, NewArrivalDetailIn, NewArrivalDetailOut
+from .new_arrival_schema import (NewArrivalIn,
+                                 NewArrivalOut,
+                                 ArrivalNewOut,
+                                 ArrivalDetailNewIn,
+                                 ArrivalDetailNewOut,
+                                 NewArrivalDetailGetList)

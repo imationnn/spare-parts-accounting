@@ -4,9 +4,14 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 
 from app.services import NewArrivalService
-from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut, NewArrivalDetailIn, NewArrivalDetailOut
 from app.api.dependencies import token_dep
 from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET
+from app.schemas import (NewArrivalOut,
+                         NewArrivalIn,
+                         ArrivalNewOut,
+                         ArrivalDetailNewIn,
+                         ArrivalDetailNewOut,
+                         NewArrivalDetailGetList)
 
 
 arrive_router = APIRouter(prefix='/new_arrival', tags=['Новые поступления'], dependencies=[token_dep])
@@ -58,13 +63,24 @@ async def create_new_arrival(
     return await arrival_service.create_new_arrive(new_arrival, token_payload)
 
 
+@arrive_router.get(
+    "/detail/{arrival_id}/list-details",
+    summary="Получить список позиций в поступлении"
+)
+async def get_list_arrival_details(
+        arrival_id: int,
+        arrival_service: NewArrivalService = Depends(),
+) -> list[NewArrivalDetailGetList]:
+    return await arrival_service.get_arr_details_by_arrive_id(arrival_id)
+
+
 @arrive_router.post(
     "/detail/add",
     summary="Добавить позицию в поступление."
 )
 async def add_arrival_detail(
-        new_arrival_detail: NewArrivalDetailIn,
+        new_arrival_detail: ArrivalDetailNewIn,
         arrival_service: NewArrivalService = Depends(),
         token_payload: dict = token_dep
-) -> NewArrivalDetailOut:
+) -> ArrivalDetailNewOut:
     return await arrival_service.add_new_arr_detail(new_arrival_detail, token_payload)

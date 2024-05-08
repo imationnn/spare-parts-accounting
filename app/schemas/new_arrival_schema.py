@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.models.base import num_20_2
-from app.schemas import SupplierListOut
+from app.schemas import SupplierListOut, CatalogOutByNumber
 
 
 class Employee(BaseModel):
@@ -47,11 +47,11 @@ class NewArrivalDetail(BaseModel):
     arrive_id: int
 
 
-class NewArrivalDetailIn(NewArrivalDetail):
+class ArrivalDetailNewIn(NewArrivalDetail):
     part: Part
 
 
-class NewArrivalDetailOut(NewArrivalDetail):
+class ArrivalDetailNewOut(NewArrivalDetail):
     id: int
     part_id: int
     created_at: datetime
@@ -59,3 +59,8 @@ class NewArrivalDetailOut(NewArrivalDetail):
     price_out: num_20_2
     currency: str
     employee_id: int
+
+
+class NewArrivalDetailGetList(ArrivalDetailNewOut):
+    part: CatalogOutByNumber
+    employee: Employee

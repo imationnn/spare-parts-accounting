@@ -61,3 +61,10 @@ class NewArrivalDetailRepository(BaseRepository):
             ccd=ccd,
             arrive_id=arrive_id
         )
+
+    async def get_list_arrival_details(self, arrival_id: int) -> Sequence[model]:
+        stmt = (select(self.model)
+                .options(joinedload(self.model.employee), joinedload(self.model.part))
+                .where(self.model.arrive_id == arrival_id))
+        result = await self.session.scalars(stmt)
+        return result.all()

@@ -4,7 +4,14 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.exc import StatementError
 
 from app.repositories import NewArrivalRepository, NewArrivalDetailRepository, EmployeeCacheRepository
-from app.schemas import NewArrivalOut, NewArrivalIn, ArrivalNewOut, NewArrivalDetailIn, NewArrivalDetailOut
+from app.schemas import (
+    NewArrivalOut,
+    NewArrivalIn,
+    ArrivalNewOut,
+    ArrivalDetailNewIn,
+    ArrivalDetailNewOut,
+    NewArrivalDetailGetList
+)
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
 
@@ -55,8 +62,9 @@ class NewArrivalService:
         )
         return [NewArrivalOut.model_validate(item, from_attributes=True) for item in result]
 
-    async def get_arr_details_by_arrive_id(self) -> list:
-        pass
+    async def get_arr_details_by_arrive_id(self, arrive_id: int) -> list[NewArrivalDetailGetList]:
+        result = await self.new_arr_det_repository.get_list_arrival_details(arrive_id)
+        return [NewArrivalDetailGetList.model_validate(item, from_attributes=True) for item in result]
 
     async def create_new_arrive(self, new_arrive: NewArrivalIn, token_payload: dict) -> ArrivalNewOut:
         employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
@@ -72,22 +80,25 @@ class NewArrivalService:
             raise HTTPException(400)
         return ArrivalNewOut.model_validate(result, from_attributes=True)
 
-    async def add_new_arr_detail(self, new_arrive_det: NewArrivalDetailIn, token_payload: dict) -> NewArrivalDetailOut:
+    async def add_new_arr_detail(self, new_arrive_det: ArrivalDetailNewIn, token_payload: dict) -> ArrivalDetailNewOut:
         employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
         price_in = new_arrive_det.amount / new_arrive_det.qty
         price_out = round(price_in * new_arrive_det.part.margin_value)
-        result = await self.new_arr_det_repository.add_new_arrive_detail(
-            part_id=new_arrive_det.part.part_id,
-            qty=new_arrive_det.qty,
-            price_in=price_in,
-            price_out=price_out,
-            amount=new_arrive_det.amount,
-            employee_id=employee_id,
-            ccd=new_arrive_det.ccd,
-            arrive_id=new_arrive_det.arrive_id
-        )
-        await self.new_arr_det_repository.session.commit()
-        return NewArrivalDetailOut.model_validate(result, from_attributes=True)
+        try:
+            result = await self.new_arr_det_repository.add_new_arrive_detail(
+                part_id=new_arrive_det.part.part_id,
+                qty=new_arrive_det.qty,
+                price_in=price_in,
+                price_out=price_out,
+                amount=new_arrive_det.amount,
+                employee_id=employee_id,
+                ccd=new_arrive_det.ccd,
+                arrive_id=new_arrive_det.arrive_id
+            )
+            await self.new_arr_det_repository.session.commit()
+        except StatementError:
+            raise HTTPException(400)
+        return ArrivalDetailNewOut.model_validate(result, from_attributes=True)
 
     async def update_arrive(self):
         pass
