@@ -63,6 +63,18 @@ async def create_new_arrival(
     return await arrival_service.create_new_arrive(new_arrival, token_payload)
 
 
+@arrive_router.patch(
+    "/{arrival_id}/transfer-to-warehouse",
+    summary="Передать поступление на склад",
+    status_code=204
+)
+async def transfer_arrival_to_warehouse(
+        arrival_id: int,
+        arrival_service: NewArrivalService = Depends(),
+):
+    return await arrival_service.transfer_arrive_to_warehouse(arrival_id)
+
+
 @arrive_router.get(
     "/detail/{arrival_id}/list-details",
     summary="Получить список позиций в поступлении"

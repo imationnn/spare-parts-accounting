@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Sequence
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func, Row
 from sqlalchemy.orm import joinedload
 
 from app.repositories import BaseRepository
@@ -36,6 +36,12 @@ class NewArrivalRepository(BaseRepository):
     async def create_new_arrival(self, shop_id: int, employee_id: int, values: dict) -> model:
         return await self.add_one(shop_id=shop_id, employee_id=employee_id, **values)
 
+    async def get_arrival_by_id(self, arrive_id: int) -> model:
+        return await self.session.scalar(select(self.model).where(self.model.id == arrive_id))
+
+    async def update_arrival(self, arrive_id: int, **values) -> model:
+        return await self.edit_one(arrive_id, **values)
+
 
 class NewArrivalDetailRepository(BaseRepository):
     model = NewArrivalDetail
@@ -67,4 +73,10 @@ class NewArrivalDetailRepository(BaseRepository):
                 .options(joinedload(self.model.employee), joinedload(self.model.part))
                 .where(self.model.arrive_id == arrival_id))
         result = await self.session.scalars(stmt)
+        return result.all()
+
+    async def get_list_arrival_details_for_transfer(self, arrival_id: int) -> Sequence[Row[tuple[model, Decimal]]]:
+        stmt = (select(self.model, func.sum(self.model.amount).over().label('total_amount'))
+                .where(self.model.arrive_id == arrival_id))
+        result = await self.session.execute(stmt)
         return result.all()

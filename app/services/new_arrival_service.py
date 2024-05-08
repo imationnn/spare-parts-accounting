@@ -3,7 +3,12 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
 from sqlalchemy.exc import StatementError
 
-from app.repositories import NewArrivalRepository, NewArrivalDetailRepository, EmployeeCacheRepository
+from app.repositories import (
+    NewArrivalRepository,
+    NewArrivalDetailRepository,
+    EmployeeCacheRepository,
+    ActualProductRepository
+)
 from app.schemas import (
     NewArrivalOut,
     NewArrivalIn,
@@ -25,11 +30,13 @@ class NewArrivalService:
             self,
             new_arr_repository: NewArrivalRepository = Depends(),
             new_arr_det_repository: NewArrivalDetailRepository = Depends(),
-            emp_cache_repository: EmployeeCacheRepository = Depends()
+            emp_cache_repository: EmployeeCacheRepository = Depends(),
+            act_prod_repository: ActualProductRepository = Depends()
     ):
         self.new_arr_repository = new_arr_repository
         self.new_arr_det_repository = new_arr_det_repository
         self.emp_cache_repository = emp_cache_repository
+        self.act_prod_repository = act_prod_repository
 
     async def get_arrivals(
             self,
@@ -100,7 +107,7 @@ class NewArrivalService:
             raise HTTPException(400)
         return ArrivalDetailNewOut.model_validate(result, from_attributes=True)
 
-    async def update_arrive(self):
+    async def update_arrive(self, arrive_id: int):
         pass
 
     async def update_arr_detail(self):
@@ -112,8 +119,28 @@ class NewArrivalService:
     async def delete_arr_detail(self):
         pass
 
-    async def transfer_arrive_to_warehouse(self):
-        pass
+    async def transfer_arrive_to_warehouse(self, arrive_id: int):
+        arrive = await self.new_arr_repository.get_arrival_by_id(arrive_id)
+        if not arrive:
+            raise HTTPException(404, "Arrival does not exist")
+        if arrive.is_transferred:
+            raise HTTPException(400, "Arrival already transferred")
+        arrive_details = await self.new_arr_det_repository.get_list_arrival_details_for_transfer(arrive_id)
+        if not arrive_details:
+            raise HTTPException(400, "Nothing to transfer")
+        if arrive_details[0].total_amount != arrive.total_price:
+            raise HTTPException(400, "Check the amount")
+        list_models = [self.act_prod_repository.model(
+            part_id=item[0].part_id,
+            arrived=item[0].qty,
+            rest=item[0].qty,
+            price=item[0].price_out,
+            shop_id=arrive.shop_id,
+            arrive_id=arrive_id
+        ) for item in arrive_details]
+        await self.act_prod_repository.add_new_products(list_models)
+        await self.new_arr_repository.update_arrival(arrive_id, is_transferred=True)
+        await self.new_arr_repository.session.commit()
 
     async def cancel_transfer_arrive_to_warehouse(self):
         pass

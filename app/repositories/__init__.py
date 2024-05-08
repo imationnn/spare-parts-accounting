@@ -8,3 +8,4 @@ from .shop_repository import ShopRepository
 from .supplier_repository import SupplierRepository
 from .org_attr_repository import OrganizationAttrRepository
 from .new_arrival_repository import NewArrivalRepository, NewArrivalDetailRepository
+from .actual_product_repository import ActualProductRepository
