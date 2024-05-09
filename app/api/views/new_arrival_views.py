@@ -66,7 +66,9 @@ async def create_new_arrival(
 @arrive_router.patch(
     "/{arrival_id}/transfer-to-warehouse",
     summary="Передать поступление на склад",
-    status_code=204
+    status_code=204,
+    description="Передать поступление на склад можно только 1 раз. "
+                "Нельзя передать поступление в котором сумма не совпадает с суммой позиций в поступлении."
 )
 async def transfer_arrival_to_warehouse(
         arrival_id: int,
