@@ -64,3 +64,14 @@ class ArrivalDetailNewOut(NewArrivalDetail):
 class NewArrivalDetailGetList(ArrivalDetailNewOut):
     part: CatalogOutByNumber
     employee: Employee
+
+
+class NewArrivalUpdateIn(BaseModel):
+    invoice_number: str | None = Field(default=None, min_length=2, max_length=30)
+    invoice_date: str | None = Field(default=None, examples=["15.01.2024"])
+    supplier_id: int | None = None
+    total_price: num_20_2 | None = None
+
+
+class NewArrivalUpdateOut(ArrivalNewOut):
+    employee_id: int

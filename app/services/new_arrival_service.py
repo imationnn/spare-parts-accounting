@@ -15,7 +15,9 @@ from app.schemas import (
     ArrivalNewOut,
     ArrivalDetailNewIn,
     ArrivalDetailNewOut,
-    NewArrivalDetailGetList
+    NewArrivalDetailGetList,
+    NewArrivalUpdateIn,
+    NewArrivalUpdateOut
 )
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
@@ -107,8 +109,17 @@ class NewArrivalService:
             raise HTTPException(400)
         return ArrivalDetailNewOut.model_validate(result, from_attributes=True)
 
-    async def update_arrive(self, arrive_id: int):
-        pass
+    async def update_arrive(self, arrive_id: int, update_arrival: NewArrivalUpdateIn) -> NewArrivalUpdateOut:
+        await self._check_arrival(arrive_id)
+        try:
+            result = await self.new_arr_repository.update_arrival(
+                arrive_id,
+                **update_arrival.model_dump(exclude_unset=True)
+            )
+            await self.new_arr_repository.session.commit()
+        except StatementError:
+            raise HTTPException(400)
+        return NewArrivalUpdateOut.model_validate(result, from_attributes=True)
 
     async def update_arr_detail(self):
         pass

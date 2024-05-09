@@ -6,12 +6,16 @@ from fastapi import APIRouter, Depends, Query
 from app.services import NewArrivalService
 from app.api.dependencies import token_dep
 from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET
-from app.schemas import (NewArrivalOut,
-                         NewArrivalIn,
-                         ArrivalNewOut,
-                         ArrivalDetailNewIn,
-                         ArrivalDetailNewOut,
-                         NewArrivalDetailGetList)
+from app.schemas import (
+    NewArrivalOut,
+    NewArrivalIn,
+    ArrivalNewOut,
+    ArrivalDetailNewIn,
+    ArrivalDetailNewOut,
+    NewArrivalDetailGetList,
+    NewArrivalUpdateIn,
+    NewArrivalUpdateOut
+)
 
 
 arrive_router = APIRouter(prefix='/new_arrival', tags=['Новые поступления'], dependencies=[token_dep])
@@ -75,6 +79,20 @@ async def transfer_arrival_to_warehouse(
         arrival_service: NewArrivalService = Depends(),
 ):
     return await arrival_service.transfer_arrive_to_warehouse(arrival_id)
+
+
+@arrive_router.patch(
+    "/{arrival_id}/update",
+    summary="Обновить информацию в поступлении",
+    description="Нельзя обновить уже переданное поступление. "
+                "Номер накладной у одного поставщика должен быть уникальным."
+)
+async def update_arrival(
+        arrival_id: int,
+        update_arrive: NewArrivalUpdateIn,
+        arrival_service: NewArrivalService = Depends(),
+) -> NewArrivalUpdateOut:
+    return await arrival_service.update_arrive(arrival_id, update_arrive)
 
 
 @arrive_router.get(
