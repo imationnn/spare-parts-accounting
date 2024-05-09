@@ -119,22 +119,26 @@ class NewArrivalService:
     async def delete_arr_detail(self):
         pass
 
-    async def transfer_arrive_to_warehouse(self, arrive_id: int):
+    async def _check_arrival(self, arrive_id: int) -> NewArrivalRepository.model:
         arrive = await self.new_arr_repository.get_arrival_by_id(arrive_id)
         if not arrive:
             raise HTTPException(404, "Arrival does not exist")
         if arrive.is_transferred:
             raise HTTPException(400, "Arrival already transferred")
+        return arrive
+
+    async def transfer_arrive_to_warehouse(self, arrive_id: int):
+        arrive = await self._check_arrival(arrive_id)
+        if await self.new_arr_det_repository.get_total_amount_arrival_details(arrive_id) != arrive.total_price:
+            raise HTTPException(400, "Check the amount")
         arrive_details = await self.new_arr_det_repository.get_list_arrival_details_for_transfer(arrive_id)
         if not arrive_details:
             raise HTTPException(400, "Nothing to transfer")
-        if arrive_details[0].total_amount != arrive.total_price:
-            raise HTTPException(400, "Check the amount")
         list_models = [self.act_prod_repository.model(
-            part_id=item[0].part_id,
-            arrived=item[0].qty,
-            rest=item[0].qty,
-            price=item[0].price_out,
+            part_id=item.part_id,
+            arrived=item.qty,
+            rest=item.qty,
+            price=item.price_out,
             shop_id=arrive.shop_id,
             arrive_id=arrive_id
         ) for item in arrive_details]

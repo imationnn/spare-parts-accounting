@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Sequence
 
-from sqlalchemy import select, and_, func, Row
+from sqlalchemy import select, and_, func
 from sqlalchemy.orm import joinedload
 
 from app.repositories import BaseRepository
@@ -75,8 +75,11 @@ class NewArrivalDetailRepository(BaseRepository):
         result = await self.session.scalars(stmt)
         return result.all()
 
-    async def get_list_arrival_details_for_transfer(self, arrival_id: int) -> Sequence[Row[tuple[model, Decimal]]]:
-        stmt = (select(self.model, func.sum(self.model.amount).over().label('total_amount'))
-                .where(self.model.arrive_id == arrival_id))
-        result = await self.session.execute(stmt)
+    async def get_total_amount_arrival_details(self, arrival_id: int) -> Decimal:
+        stmt = select(func.sum(self.model.amount)).where(self.model.arrive_id == arrival_id)
+        return await self.session.scalar(stmt)
+
+    async def get_list_arrival_details_for_transfer(self, arrival_id: int) -> Sequence[model]:
+        stmt = select(self.model).where(self.model.arrive_id == arrival_id)
+        result = await self.session.scalars(stmt)
         return result.all()
