@@ -17,8 +17,11 @@ from app.schemas import (
     ArrivalDetailNewOut,
     NewArrivalDetailGetList,
     NewArrivalUpdateIn,
-    NewArrivalUpdateOut
+    NewArrivalUpdateOut,
+    NewArrivalDetailUpdateIn,
+    NewArrivalDetailUpdateOut
 )
+from app.services import CatalogService
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
 
@@ -33,12 +36,14 @@ class NewArrivalService:
             new_arr_repository: NewArrivalRepository = Depends(),
             new_arr_det_repository: NewArrivalDetailRepository = Depends(),
             emp_cache_repository: EmployeeCacheRepository = Depends(),
-            act_prod_repository: ActualProductRepository = Depends()
+            act_prod_repository: ActualProductRepository = Depends(),
+            catalog_service: CatalogService = Depends()
     ):
         self.new_arr_repository = new_arr_repository
         self.new_arr_det_repository = new_arr_det_repository
         self.emp_cache_repository = emp_cache_repository
         self.act_prod_repository = act_prod_repository
+        self.catalog_service = catalog_service
 
     async def get_arrivals(
             self,
@@ -92,13 +97,11 @@ class NewArrivalService:
     async def add_new_arr_detail(self, new_arrive_det: ArrivalDetailNewIn, token_payload: dict) -> ArrivalDetailNewOut:
         employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
         price_in = new_arrive_det.amount / new_arrive_det.qty
-        price_out = round(price_in * new_arrive_det.part.margin_value)
         try:
             result = await self.new_arr_det_repository.add_new_arrive_detail(
                 part_id=new_arrive_det.part.part_id,
                 qty=new_arrive_det.qty,
                 price_in=price_in,
-                price_out=price_out,
                 amount=new_arrive_det.amount,
                 employee_id=employee_id,
                 ccd=new_arrive_det.ccd,
@@ -121,8 +124,34 @@ class NewArrivalService:
             raise HTTPException(400)
         return NewArrivalUpdateOut.model_validate(result, from_attributes=True)
 
-    async def update_arr_detail(self):
-        pass
+    async def get_arrive_detail(self, arr_detail_id: int) -> NewArrivalDetailRepository.model:
+        arrive_detail = await self.new_arr_det_repository.get_arrive_detail(arr_detail_id)
+        if not arrive_detail:
+            raise HTTPException(404)
+        return arrive_detail
+
+    async def update_arr_detail(
+            self,
+            arr_detail_id: int,
+            update_arr_det: NewArrivalDetailUpdateIn
+    ) -> NewArrivalDetailUpdateOut:
+        arrive_detail = await self.get_arrive_detail(arr_detail_id)
+        await self._check_arrival(arrive_detail.arrive_id)
+        if update_arr_det.part_id:
+            arrive_detail.part_id = update_arr_det.part_id
+        if update_arr_det.qty or update_arr_det.amount:
+            if update_arr_det.qty:
+                arrive_detail.qty = update_arr_det.qty
+            if update_arr_det.amount:
+                arrive_detail.amount = update_arr_det.amount
+            arrive_detail.price_in = arrive_detail.amount / arrive_detail.qty
+        if update_arr_det.ccd:
+            arrive_detail.ccd = update_arr_det.ccd
+        try:
+            await self.new_arr_det_repository.update_arrival_details(arrive_detail)
+        except StatementError:
+            raise HTTPException(400)
+        return NewArrivalDetailUpdateOut.model_validate(arrive_detail, from_attributes=True)
 
     async def delete_arrive(self):
         pass
@@ -138,6 +167,21 @@ class NewArrivalService:
             raise HTTPException(400, "Arrival already transferred")
         return arrive
 
+    @staticmethod
+    def _create_actual_product_model(
+            arrival_detail_model: NewArrivalDetailRepository.model,
+            shop_id: int
+    ) -> ActualProductRepository.model:
+        price_out = round(arrival_detail_model.price_in * arrival_detail_model.part.margin.margin_value)
+        return ActualProductRepository.model(
+            part_id=arrival_detail_model.part_id,
+            arrived=arrival_detail_model.qty,
+            rest=arrival_detail_model.qty,
+            price=price_out,
+            shop_id=shop_id,
+            arrive_id=arrival_detail_model.arrive_id
+        )
+
     async def transfer_arrive_to_warehouse(self, arrive_id: int):
         arrive = await self._check_arrival(arrive_id)
         if await self.new_arr_det_repository.get_total_amount_arrival_details(arrive_id) != arrive.total_price:
@@ -145,14 +189,7 @@ class NewArrivalService:
         arrive_details = await self.new_arr_det_repository.get_list_arrival_details_for_transfer(arrive_id)
         if not arrive_details:
             raise HTTPException(400, "Nothing to transfer")
-        list_models = [self.act_prod_repository.model(
-            part_id=item.part_id,
-            arrived=item.qty,
-            rest=item.qty,
-            price=item.price_out,
-            shop_id=arrive.shop_id,
-            arrive_id=arrive_id
-        ) for item in arrive_details]
+        list_models = [self._create_actual_product_model(item, arrive.shop_id) for item in arrive_details]
         await self.act_prod_repository.add_new_products(list_models)
         await self.new_arr_repository.update_arrival(arrive_id, is_transferred=True)
         await self.new_arr_repository.session.commit()

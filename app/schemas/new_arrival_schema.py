@@ -41,7 +41,7 @@ class NewArrivalOut(ArrivalNewOut):
 
 
 class NewArrivalDetail(BaseModel):
-    qty: int
+    qty: int = Field(gt=0)
     amount: num_20_2
     ccd: str | None = None
     arrive_id: int
@@ -56,7 +56,6 @@ class ArrivalDetailNewOut(NewArrivalDetail):
     part_id: int
     created_at: datetime
     price_in: num_20_2
-    price_out: num_20_2
     currency: str
     employee_id: int
 
@@ -75,3 +74,14 @@ class NewArrivalUpdateIn(BaseModel):
 
 class NewArrivalUpdateOut(ArrivalNewOut):
     employee_id: int
+
+
+class NewArrivalDetailUpdateIn(BaseModel):
+    part_id: int | None = None
+    qty: int | None = Field(default=None, gt=0)
+    amount: num_20_2 | None = None
+    ccd: str | None = None
+
+
+class NewArrivalDetailUpdateOut(ArrivalDetailNewOut):
+    pass

@@ -14,7 +14,7 @@ from app.schemas import (
     ArrivalDetailNewOut,
     NewArrivalDetailGetList,
     NewArrivalUpdateIn,
-    NewArrivalUpdateOut
+    NewArrivalUpdateOut, NewArrivalDetailUpdateIn, NewArrivalDetailUpdateOut
 )
 
 
@@ -108,7 +108,7 @@ async def get_list_arrival_details(
 
 @arrive_router.post(
     "/detail/add",
-    summary="Добавить позицию в поступление."
+    summary="Добавить позицию в поступление"
 )
 async def add_arrival_detail(
         new_arrival_detail: ArrivalDetailNewIn,
@@ -116,3 +116,16 @@ async def add_arrival_detail(
         token_payload: dict = token_dep
 ) -> ArrivalDetailNewOut:
     return await arrival_service.add_new_arr_detail(new_arrival_detail, token_payload)
+
+
+@arrive_router.patch(
+    "/detail/{arrival_detail_id}/update",
+    summary="Обновить информацию позиции в поступлении",
+    description="Нельзя обновить уже переданное поступление."
+)
+async def update_arrival_detail(
+        arrival_detail_id: int,
+        update_arrive_detail: NewArrivalDetailUpdateIn,
+        arrival_service: NewArrivalService = Depends(),
+) -> NewArrivalDetailUpdateOut:
+    return await arrival_service.update_arr_detail(arrival_detail_id, update_arrive_detail)

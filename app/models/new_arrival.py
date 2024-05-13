@@ -35,7 +35,6 @@ class NewArrivalDetail(Base):
     created_at: Mapped[created_at]
     qty: Mapped[int]
     price_in: Mapped[num_20_2]
-    price_out: Mapped[num_20_2]
     amount: Mapped[num_20_2]
     currency: Mapped[str] = mapped_column(default="RUB", server_default="RUB")
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))

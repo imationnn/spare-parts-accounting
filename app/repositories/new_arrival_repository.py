@@ -6,7 +6,7 @@ from sqlalchemy import select, and_, func
 from sqlalchemy.orm import joinedload
 
 from app.repositories import BaseRepository
-from app.models import NewArrival, NewArrivalDetail
+from app.models import NewArrival, NewArrivalDetail, CatalogPart
 
 
 class NewArrivalRepository(BaseRepository):
@@ -51,7 +51,6 @@ class NewArrivalDetailRepository(BaseRepository):
             part_id: int,
             qty: int,
             price_in: Decimal,
-            price_out: Decimal,
             amount: Decimal,
             employee_id: int,
             ccd: str,
@@ -61,7 +60,6 @@ class NewArrivalDetailRepository(BaseRepository):
             part_id=part_id,
             qty=qty,
             price_in=price_in,
-            price_out=price_out,
             amount=amount,
             employee_id=employee_id,
             ccd=ccd,
@@ -80,6 +78,16 @@ class NewArrivalDetailRepository(BaseRepository):
         return await self.session.scalar(stmt)
 
     async def get_list_arrival_details_for_transfer(self, arrival_id: int) -> Sequence[model]:
-        stmt = select(self.model).where(self.model.arrive_id == arrival_id)
+        stmt = (select(self.model)
+                .options(joinedload(self.model.part)
+                         .joinedload(CatalogPart.margin))
+                .where(self.model.arrive_id == arrival_id))
         result = await self.session.scalars(stmt)
         return result.all()
+
+    async def update_arrival_details(self, arr_detail_model: NewArrival):
+        self.session.add(arr_detail_model)
+        await self.session.commit()
+
+    async def get_arrive_detail(self, arr_detail_id: int) -> model | None:
+        return await self.get_one(id=arr_detail_id)

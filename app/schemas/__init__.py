@@ -20,5 +20,7 @@ from .new_arrival_schema import (
     ArrivalDetailNewOut,
     NewArrivalDetailGetList,
     NewArrivalUpdateIn,
-    NewArrivalUpdateOut
+    NewArrivalUpdateOut,
+    NewArrivalDetailUpdateIn,
+    NewArrivalDetailUpdateOut
 )
