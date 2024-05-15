@@ -17,7 +17,8 @@ from app.schemas import (
     NewArrivalUpdateOut,
     NewArrivalDetailUpdateIn,
     NewArrivalDetailUpdateOut,
-    NewArrivalDeleteOut
+    NewArrivalDeleteOut,
+    NewArrivalDetailDeleteOut
 )
 
 
@@ -144,3 +145,15 @@ async def update_arrival_detail(
         arrival_service: NewArrivalService = Depends(),
 ) -> NewArrivalDetailUpdateOut:
     return await arrival_service.update_arr_detail(arrival_detail_id, update_arrive_detail)
+
+
+@arrive_router.delete(
+    "/detail/{arrival_detail_id}/delete",
+    summary="Удалить позицию в поступлении",
+    description="Позицию можно удалить только в не переданном поступлении"
+)
+async def delete_arrive_detail(
+        arrival_detail_id: int,
+        arrival_service: NewArrivalService = Depends(),
+) -> NewArrivalDetailDeleteOut:
+    return await arrival_service.delete_arr_detail(arrival_detail_id)

@@ -89,3 +89,7 @@ class NewArrivalDetailUpdateOut(ArrivalDetailNewOut):
 
 class NewArrivalDeleteOut(ArrivalNewOut):
     pass
+
+
+class NewArrivalDetailDeleteOut(ArrivalDetailNewOut):
+    pass

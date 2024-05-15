@@ -20,7 +20,8 @@ from app.schemas import (
     NewArrivalUpdateOut,
     NewArrivalDetailUpdateIn,
     NewArrivalDetailUpdateOut,
-    NewArrivalDeleteOut
+    NewArrivalDeleteOut,
+    NewArrivalDetailDeleteOut
 )
 from app.services import CatalogService
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
@@ -159,8 +160,11 @@ class NewArrivalService:
         await self.new_arr_repository.delete_arrival(arrive)
         return NewArrivalDeleteOut.model_validate(arrive, from_attributes=True)
 
-    async def delete_arr_detail(self):
-        pass
+    async def delete_arr_detail(self, arr_detail_id: int):
+        arrive_detail = await self.get_arrive_detail(arr_detail_id)
+        await self._check_arrival(arrive_detail.arrive_id)
+        await self.new_arr_det_repository.delete_arrive_detail(arrive_detail)
+        return NewArrivalDetailDeleteOut.model_validate(arrive_detail, from_attributes=True)
 
     async def _check_arrival(self, arrive_id: int) -> NewArrivalRepository.model:
         arrive = await self.new_arr_repository.get_arrival_by_id(arrive_id)

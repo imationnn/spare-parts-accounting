@@ -95,3 +95,7 @@ class NewArrivalDetailRepository(BaseRepository):
 
     async def get_arrive_detail(self, arr_detail_id: int) -> model | None:
         return await self.get_one(id=arr_detail_id)
+
+    async def delete_arrive_detail(self, arrive_detail_model: model):
+        await self.session.delete(arrive_detail_model)
+        await self.session.commit()

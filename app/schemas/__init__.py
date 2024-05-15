@@ -23,5 +23,6 @@ from .new_arrival_schema import (
     NewArrivalUpdateOut,
     NewArrivalDetailUpdateIn,
     NewArrivalDetailUpdateOut,
-    NewArrivalDeleteOut
+    NewArrivalDeleteOut,
+    NewArrivalDetailDeleteOut
 )
