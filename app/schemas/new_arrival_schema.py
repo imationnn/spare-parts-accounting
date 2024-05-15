@@ -85,3 +85,7 @@ class NewArrivalDetailUpdateIn(BaseModel):
 
 class NewArrivalDetailUpdateOut(ArrivalDetailNewOut):
     pass
+
+
+class NewArrivalDeleteOut(ArrivalNewOut):
+    pass

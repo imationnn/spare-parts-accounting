@@ -42,6 +42,10 @@ class NewArrivalRepository(BaseRepository):
     async def update_arrival(self, arrive_id: int, **values) -> model:
         return await self.edit_one(arrive_id, **values)
 
+    async def delete_arrival(self, arrive_model: model):
+        await self.session.delete(arrive_model)
+        await self.session.commit()
+
 
 class NewArrivalDetailRepository(BaseRepository):
     model = NewArrivalDetail

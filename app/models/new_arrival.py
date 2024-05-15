@@ -39,7 +39,7 @@ class NewArrivalDetail(Base):
     currency: Mapped[str] = mapped_column(default="RUB", server_default="RUB")
     employee_id: Mapped[int] = mapped_column(ForeignKey("employees.id"))
     ccd: Mapped[str | None]
-    arrive_id: Mapped[int] = mapped_column(ForeignKey("new_arrivals.id"))
+    arrive_id: Mapped[int] = mapped_column(ForeignKey("new_arrivals.id", ondelete="CASCADE"))
 
     part: Mapped["CatalogPart"] = relationship()
     employee: Mapped["Employee"] = relationship()

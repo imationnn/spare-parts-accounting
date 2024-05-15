@@ -22,5 +22,6 @@ from .new_arrival_schema import (
     NewArrivalUpdateIn,
     NewArrivalUpdateOut,
     NewArrivalDetailUpdateIn,
-    NewArrivalDetailUpdateOut
+    NewArrivalDetailUpdateOut,
+    NewArrivalDeleteOut
 )

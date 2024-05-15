@@ -14,7 +14,10 @@ from app.schemas import (
     ArrivalDetailNewOut,
     NewArrivalDetailGetList,
     NewArrivalUpdateIn,
-    NewArrivalUpdateOut, NewArrivalDetailUpdateIn, NewArrivalDetailUpdateOut
+    NewArrivalUpdateOut,
+    NewArrivalDetailUpdateIn,
+    NewArrivalDetailUpdateOut,
+    NewArrivalDeleteOut
 )
 
 
@@ -93,6 +96,18 @@ async def update_arrival(
         arrival_service: NewArrivalService = Depends(),
 ) -> NewArrivalUpdateOut:
     return await arrival_service.update_arrive(arrival_id, update_arrive)
+
+
+@arrive_router.delete(
+    "/{arrival_id}/delete",
+    summary="Удалить поступление",
+    description="Можно удалить только не переданное поступление"
+)
+async def delete_arrival(
+        arrival_id: int,
+        arrival_service: NewArrivalService = Depends(),
+) -> NewArrivalDeleteOut:
+    return await arrival_service.delete_arrive(arrival_id)
 
 
 @arrive_router.get(
