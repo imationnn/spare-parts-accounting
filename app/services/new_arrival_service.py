@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from sqlalchemy.exc import StatementError
 
 from app.repositories import (
@@ -22,6 +22,15 @@ from app.schemas import (
     NewArrivalDetailUpdateOut,
     NewArrivalDeleteOut,
     NewArrivalDetailDeleteOut
+)
+from app.exceptions import (
+    ArrivalDateRangeExceeded,
+    ArrivalNotFound,
+    ArrivalBadParameters,
+    ArrivalCheckAmount,
+    ArrivalNothingTransfer,
+    ArrivalAlreadyTransferred,
+    ArrivalAlreadyExist
 )
 from app.services import CatalogService
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
@@ -61,7 +70,7 @@ class NewArrivalService:
             if to_date is None:
                 to_date = datetime.now()
             if (to_date - from_date) > timedelta(days=LIMIT_DATE_RANGE):
-                raise HTTPException(400)
+                raise ArrivalDateRangeExceeded(LIMIT_DATE_RANGE)
         else:
             to_date = datetime.now()
             from_date = to_date - timedelta(days=DEFAULT_DAYS_OFFSET)
@@ -93,7 +102,7 @@ class NewArrivalService:
             )
             await self.new_arr_repository.session.commit()
         except StatementError:
-            raise HTTPException(400)
+            raise ArrivalAlreadyExist
         return ArrivalNewOut.model_validate(result, from_attributes=True)
 
     async def add_new_arr_detail(self, new_arrive_det: ArrivalDetailNewIn, token_payload: dict) -> ArrivalDetailNewOut:
@@ -101,7 +110,7 @@ class NewArrivalService:
         price_in = new_arrive_det.amount / new_arrive_det.qty
         try:
             result = await self.new_arr_det_repository.add_new_arrive_detail(
-                part_id=new_arrive_det.part.part_id,
+                part_id=new_arrive_det.part_id,
                 qty=new_arrive_det.qty,
                 price_in=price_in,
                 amount=new_arrive_det.amount,
@@ -111,7 +120,7 @@ class NewArrivalService:
             )
             await self.new_arr_det_repository.session.commit()
         except StatementError:
-            raise HTTPException(400)
+            raise ArrivalBadParameters
         return ArrivalDetailNewOut.model_validate(result, from_attributes=True)
 
     async def update_arrive(self, arrive_id: int, update_arrival: NewArrivalUpdateIn) -> NewArrivalUpdateOut:
@@ -123,13 +132,13 @@ class NewArrivalService:
             )
             await self.new_arr_repository.session.commit()
         except StatementError:
-            raise HTTPException(400)
+            raise ArrivalBadParameters
         return NewArrivalUpdateOut.model_validate(result, from_attributes=True)
 
     async def get_arrive_detail(self, arr_detail_id: int) -> NewArrivalDetailRepository.model:
         arrive_detail = await self.new_arr_det_repository.get_arrive_detail(arr_detail_id)
         if not arrive_detail:
-            raise HTTPException(404)
+            raise ArrivalNotFound
         return arrive_detail
 
     async def update_arr_detail(
@@ -152,7 +161,7 @@ class NewArrivalService:
         try:
             await self.new_arr_det_repository.update_arrival_details(arrive_detail)
         except StatementError:
-            raise HTTPException(400)
+            raise ArrivalBadParameters
         return NewArrivalDetailUpdateOut.model_validate(arrive_detail, from_attributes=True)
 
     async def delete_arrive(self, arrival_id: int) -> NewArrivalDeleteOut:
@@ -169,9 +178,9 @@ class NewArrivalService:
     async def _check_arrival(self, arrive_id: int) -> NewArrivalRepository.model:
         arrive = await self.new_arr_repository.get_arrival_by_id(arrive_id)
         if not arrive:
-            raise HTTPException(404, "Arrival does not exist")
+            raise ArrivalNotFound
         if arrive.is_transferred:
-            raise HTTPException(400, "Arrival already transferred")
+            raise ArrivalAlreadyTransferred
         return arrive
 
     @staticmethod
@@ -192,10 +201,10 @@ class NewArrivalService:
     async def transfer_arrive_to_warehouse(self, arrive_id: int):
         arrive = await self._check_arrival(arrive_id)
         if await self.new_arr_det_repository.get_total_amount_arrival_details(arrive_id) != arrive.total_price:
-            raise HTTPException(400, "Check the amount")
+            raise ArrivalCheckAmount
         arrive_details = await self.new_arr_det_repository.get_list_arrival_details_for_transfer(arrive_id)
         if not arrive_details:
-            raise HTTPException(400, "Nothing to transfer")
+            raise ArrivalNothingTransfer
         list_models = [self._create_actual_product_model(item, arrive.shop_id) for item in arrive_details]
         await self.act_prod_repository.add_new_products(list_models)
         await self.new_arr_repository.update_arrival(arrive_id, is_transferred=True)

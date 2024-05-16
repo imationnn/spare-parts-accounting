@@ -16,16 +16,11 @@ class Supplier(SupplierListOut):
     pass
 
 
-class Part(BaseModel):
-    part_id: int
-    margin_value: Decimal = Field(ge=1, decimal_places=2)
-
-
 class NewArrivalIn(BaseModel):
     invoice_number: str = Field(min_length=2, max_length=30)
     invoice_date: str = Field(examples=["15.01.2024"])
     supplier_id: int
-    total_price: num_20_2 = Field(default=0)
+    total_price: num_20_2 = Field(default=0, ge=0)
 
 
 class ArrivalNewOut(NewArrivalIn):
@@ -40,20 +35,16 @@ class NewArrivalOut(ArrivalNewOut):
     supplier: Supplier
 
 
-class NewArrivalDetail(BaseModel):
+class ArrivalDetailNewIn(BaseModel):
+    part_id: int
     qty: int = Field(gt=0)
-    amount: num_20_2
+    amount: num_20_2 = Field(ge=0)
     ccd: str | None = None
     arrive_id: int
 
 
-class ArrivalDetailNewIn(NewArrivalDetail):
-    part: Part
-
-
-class ArrivalDetailNewOut(NewArrivalDetail):
+class ArrivalDetailNewOut(ArrivalDetailNewIn):
     id: int
-    part_id: int
     created_at: datetime
     price_in: num_20_2
     currency: str
@@ -69,7 +60,7 @@ class NewArrivalUpdateIn(BaseModel):
     invoice_number: str | None = Field(default=None, min_length=2, max_length=30)
     invoice_date: str | None = Field(default=None, examples=["15.01.2024"])
     supplier_id: int | None = None
-    total_price: num_20_2 | None = None
+    total_price: num_20_2 | None = Field(default=None, ge=0)
 
 
 class NewArrivalUpdateOut(ArrivalNewOut):
@@ -79,7 +70,7 @@ class NewArrivalUpdateOut(ArrivalNewOut):
 class NewArrivalDetailUpdateIn(BaseModel):
     part_id: int | None = None
     qty: int | None = Field(default=None, gt=0)
-    amount: num_20_2 | None = None
+    amount: num_20_2 | None = Field(default=None, ge=0)
     ccd: str | None = None
 
 

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.services import NewArrivalService
 from app.api.dependencies import token_dep
-from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET
+from app.services.new_arrival_service import DEFAULT_DAYS_OFFSET, LIMIT_DATE_RANGE
 from app.schemas import (
     NewArrivalOut,
     NewArrivalIn,
@@ -35,7 +35,7 @@ class DescriptionQueryArrival:
 @arrive_router.get(
     "/list-arrivals",
     summary="Получить список новых поступлений",
-    description="Максимальный диапазон между начальной и конечной датой - 366 дней"
+    description=f"Максимальный диапазон между начальной и конечной датой - {LIMIT_DATE_RANGE} дней"
 )
 async def get_list_arrivals(
         from_date: datetime = Query(default=None, description=DescriptionQueryArrival.from_date),

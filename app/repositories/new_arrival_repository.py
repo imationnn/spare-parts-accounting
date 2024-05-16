@@ -89,7 +89,7 @@ class NewArrivalDetailRepository(BaseRepository):
         result = await self.session.scalars(stmt)
         return result.all()
 
-    async def update_arrival_details(self, arr_detail_model: NewArrival):
+    async def update_arrival_details(self, arr_detail_model: model):
         self.session.add(arr_detail_model)
         await self.session.commit()
 
