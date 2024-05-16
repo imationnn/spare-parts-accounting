@@ -25,7 +25,8 @@ class ActualProduct(Base):
     safety_reserve: Mapped[int | None]
     comment: Mapped[str | None]
 
-    part: Mapped["CatalogPart"] = relationship(lazy='joined')
+    part: Mapped["CatalogPart"] = relationship()
+    shop: Mapped["Shop"] = relationship()
 
 
 class Shop(Base):
