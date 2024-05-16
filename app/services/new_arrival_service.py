@@ -169,7 +169,7 @@ class NewArrivalService:
         await self.new_arr_repository.delete_arrival(arrive)
         return NewArrivalDeleteOut.model_validate(arrive, from_attributes=True)
 
-    async def delete_arr_detail(self, arr_detail_id: int):
+    async def delete_arr_detail(self, arr_detail_id: int) -> NewArrivalDetailDeleteOut:
         arrive_detail = await self.get_arrive_detail(arr_detail_id)
         await self._check_arrival(arrive_detail.arrive_id)
         await self.new_arr_det_repository.delete_arrive_detail(arrive_detail)
