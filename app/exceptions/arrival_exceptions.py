@@ -24,7 +24,7 @@ class ArrivalBadParameters(BaseExceptions):
 
 
 class ArrivalAlreadyTransferred(BaseExceptions):
-    status_code: int = 400
+    status_code: int = 409
     detail: str = "Arrival already transferred"
 
 
