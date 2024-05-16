@@ -6,3 +6,4 @@ from .employee_views import employee_router
 from .shop_views import shop_router
 from .supplier_views import supplier_router
 from .new_arrival_views import arrive_router
+from .actual_product_views import act_product_router

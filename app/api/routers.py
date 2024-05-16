@@ -8,7 +8,9 @@ from .views import (
     employee_router,
     shop_router,
     supplier_router,
-    arrive_router)
+    arrive_router,
+    act_product_router
+)
 
 
 main_router = APIRouter()
@@ -20,3 +22,4 @@ main_router.include_router(employee_router)
 main_router.include_router(shop_router)
 main_router.include_router(supplier_router)
 main_router.include_router(arrive_router)
+main_router.include_router(act_product_router)

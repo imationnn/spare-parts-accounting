@@ -26,3 +26,4 @@ from .new_arrival_schema import (
     NewArrivalDeleteOut,
     NewArrivalDetailDeleteOut
 )
+from .actual_product_schema import ActualProductOutByPartId, ActualProductOutById
