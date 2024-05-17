@@ -1,7 +1,13 @@
+from datetime import datetime, timedelta
+
 from fastapi import Depends, HTTPException
 
 from app.repositories import ActualProductRepository, EmployeeCacheRepository
 from app.schemas import ActualProductOutByPartId, ActualProductOutById
+from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
+
+
+LIMIT_DATE_RANGE = 366
 
 
 class ActualProductService:
@@ -20,11 +26,39 @@ class ActualProductService:
             raise HTTPException(404, "Actual product not found")
         return ActualProductOutById.model_validate(product, from_attributes=True)
 
-    async def get_list_actual_products_by_part_id(self, parts_id_list: list) -> list[ActualProductOutByPartId]:
+    async def get_list_actual_products_by_part_id(
+            self,
+            parts_id_list: list,
+            token_payload: dict,
+            archive: bool | None,
+            from_date: datetime = None,
+            to_date: datetime = None,
+            only_current_shop: bool = False
+    ) -> list[ActualProductOutByPartId]:
         if not parts_id_list:
             return []
-        res = await self.actual_prod_repository.get_list_actual_products(parts_id_list)
-        return [ActualProductOutByPartId.model_validate(item, from_attributes=True) for item in res]
+        if archive:
+            timedelta_limit = timedelta(days=LIMIT_DATE_RANGE)
+            if to_date is None:
+                to_date = datetime.now()
+            if from_date is None:
+                from_date = to_date - timedelta_limit
+            if (to_date - from_date) > timedelta_limit:
+                raise HTTPException(400, f"Date range exceeded, available limit {LIMIT_DATE_RANGE} days")
+            date_range = (from_date, to_date)
+        else:
+            date_range = None
+        if only_current_shop:
+            emp_cache = await self.emp_cache_repository.get_employee_cache(token_payload[NAME_FIELD_EMPLOYEE_ID])
+            current_shop = emp_cache.shop_id
+        else:
+            current_shop = None
+        result = await self.actual_prod_repository.get_list_actual_products(
+            parts_id=parts_id_list,
+            date_range=date_range,
+            current_shop=current_shop
+        )
+        return [ActualProductOutByPartId.model_validate(item, from_attributes=True) for item in result]
 
     async def update_actual_product(self):
         pass

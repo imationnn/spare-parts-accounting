@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 
 from sqlalchemy import select
@@ -16,13 +17,24 @@ class ActualProductRepository(BaseRepository):
     async def get_actual_product(self, product_id: int) -> model | None:
         return await self.get_one(id=product_id)
 
-    async def get_list_actual_products(self, parts_id: list) -> Sequence[model]:
+    async def get_list_actual_products(
+            self,
+            parts_id: list,
+            date_range: tuple[datetime] | None,
+            current_shop: int | None
+    ) -> Sequence[model]:
         stmt = (
             select(self.model)
             .options(joinedload(self.model.part), joinedload(self.model.shop))
             .where(self.model.part_id.in_(parts_id))
-            .where(self.model.released != self.model.arrived)
             .order_by(self.model.part_id, self.model.arrived_at)
         )
+        if date_range is not None:
+            stmt = (stmt.where(self.model.released == self.model.arrived)
+                    .where(self.model.arrived_at.between(*date_range)))
+        else:
+            stmt = stmt.where(self.model.released != self.model.arrived)
+        if current_shop is not None:
+            stmt = stmt.where(self.model.shop_id == current_shop)
         result = await self.session.scalars(stmt)
         return result.all()
