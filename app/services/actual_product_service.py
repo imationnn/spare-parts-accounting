@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
 
 from app.repositories import ActualProductRepository, EmployeeCacheRepository
-from app.schemas import ActualProductOutByPartId, ActualProductOutById
+from app.schemas import ActualProductOutByPartId, ActualProductOutById, ActualProductUpdateOut, ActualProductUpdateIn
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
 
 
@@ -20,11 +20,17 @@ class ActualProductService:
         self.actual_prod_repository = actual_prod_repository
         self.emp_cache_repository = emp_cache_repository
 
-    async def get_actual_product_by_id(self, product_id: int) -> ActualProductOutById:
+    async def _get_actual_product_by_id(self, product_id: int) -> ActualProductRepository.model:
         product = await self.actual_prod_repository.get_actual_product(product_id)
         if not product:
             raise HTTPException(404, "Actual product not found")
-        return ActualProductOutById.model_validate(product, from_attributes=True)
+        return product
+
+    async def get_actual_product_by_id(self, product_id: int) -> ActualProductOutById:
+        return ActualProductOutById.model_validate(
+            await self._get_actual_product_by_id(product_id),
+            from_attributes=True
+        )
 
     async def get_list_actual_products_by_part_id(
             self,
@@ -60,5 +66,14 @@ class ActualProductService:
         )
         return [ActualProductOutByPartId.model_validate(item, from_attributes=True) for item in result]
 
-    async def update_actual_product(self):
-        pass
+    async def update_actual_product(
+            self,
+            product_id: int,
+            act_prod_update: ActualProductUpdateIn
+    ) -> ActualProductUpdateOut:
+        values = act_prod_update.model_dump(exclude_unset=True)
+        if not values:
+            raise HTTPException(400)
+        await self._get_actual_product_by_id(product_id)
+        result = await self.actual_prod_repository.update_actual_product(product_id, **values)
+        return ActualProductUpdateOut.model_validate(result, from_attributes=True)

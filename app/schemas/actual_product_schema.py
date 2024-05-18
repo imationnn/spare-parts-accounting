@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models import num_20_2
 from app.schemas import CatalogOutByNumber
@@ -36,9 +36,9 @@ class ActualProductOutByPartId(BaseModel):
 
 
 class ActualProductUpdateIn(BaseModel):
-    price: num_20_2 | None = None
-    safety_reserve: int | None = None
-    comment: str | None = None
+    price: num_20_2 | None = Field(default=None, ge=0)
+    safety_reserve: int | None = Field(default=None, ge=0)
+    comment: str | None = Field(default=None, max_length=200)
 
 
 class ActualProductUpdateOut(ActualProductOutById):

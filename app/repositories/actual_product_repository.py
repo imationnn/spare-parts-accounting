@@ -38,3 +38,8 @@ class ActualProductRepository(BaseRepository):
             stmt = stmt.where(self.model.shop_id == current_shop)
         result = await self.session.scalars(stmt)
         return result.all()
+
+    async def update_actual_product(self, product_id: int, **values) -> model:
+        result = await self.edit_one(product_id, **values)
+        await self.session.commit()
+        return result

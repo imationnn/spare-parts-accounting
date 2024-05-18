@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, Body, Query
 from app.services import ActualProductService
 from app.services.actual_product_service import LIMIT_DATE_RANGE
 from app.api.dependencies import token_dep
-from app.schemas import ActualProductOutById, ActualProductOutByPartId
+from app.schemas import ActualProductOutById, ActualProductOutByPartId, ActualProductUpdateIn, ActualProductUpdateOut
+
 
 act_product_router = APIRouter(prefix='/actual', tags=['Товары в наличии'], dependencies=[token_dep])
 
@@ -51,3 +52,15 @@ async def get_list_actual_products(
         to_date=to_date,
         only_current_shop=only_current_shop
     )
+
+
+@act_product_router.patch(
+    "/{product_id}/update",
+    summary="Обновить информацию о товаре в наличии"
+)
+async def update_products(
+        product_id: int,
+        update_product: ActualProductUpdateIn,
+        act_product_service: ActualProductService = Depends()
+) -> ActualProductUpdateOut:
+    return await act_product_service.update_actual_product(product_id, update_product)
