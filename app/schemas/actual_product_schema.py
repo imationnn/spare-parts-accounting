@@ -33,3 +33,13 @@ class ActualProductOutByPartId(BaseModel):
     safety_reserve: int | None
     shop: Shop
     part: CatalogOutByNumber
+
+
+class ActualProductUpdateIn(BaseModel):
+    price: num_20_2 | None = None
+    safety_reserve: int | None = None
+    comment: str | None = None
+
+
+class ActualProductUpdateOut(ActualProductOutById):
+    pass
