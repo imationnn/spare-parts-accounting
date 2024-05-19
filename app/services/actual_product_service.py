@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 
 from app.repositories import ActualProductRepository, EmployeeCacheRepository
 from app.schemas import ActualProductOutByPartId, ActualProductOutById, ActualProductUpdateOut, ActualProductUpdateIn
 from app.services.auth_service import NAME_FIELD_EMPLOYEE_ID
+from app.exceptions import ProductNotFound, ProductBadParameters, ProductDateRangeExceeded
 
 
 LIMIT_DATE_RANGE = 366
@@ -23,7 +24,7 @@ class ActualProductService:
     async def _get_actual_product_by_id(self, product_id: int) -> ActualProductRepository.model:
         product = await self.actual_prod_repository.get_actual_product(product_id)
         if not product:
-            raise HTTPException(404, "Actual product not found")
+            raise ProductNotFound
         return product
 
     async def get_actual_product_by_id(self, product_id: int) -> ActualProductOutById:
@@ -50,7 +51,7 @@ class ActualProductService:
             if from_date is None:
                 from_date = to_date - timedelta_limit
             if (to_date - from_date) > timedelta_limit:
-                raise HTTPException(400, f"Date range exceeded, available limit {LIMIT_DATE_RANGE} days")
+                raise ProductDateRangeExceeded(LIMIT_DATE_RANGE)
             date_range = (from_date, to_date)
         else:
             date_range = None
@@ -73,7 +74,7 @@ class ActualProductService:
     ) -> ActualProductUpdateOut:
         values = act_prod_update.model_dump(exclude_unset=True)
         if not values:
-            raise HTTPException(400)
+            raise ProductBadParameters
         await self._get_actual_product_by_id(product_id)
         result = await self.actual_prod_repository.update_actual_product(product_id, **values)
         return ActualProductUpdateOut.model_validate(result, from_attributes=True)
