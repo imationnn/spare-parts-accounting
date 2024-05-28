@@ -9,11 +9,11 @@ from app.services import AuthHelper
 INSERT_DATA = {
     am.Brand: dft.brands,
     am.Shop: dft.shops,
-    am.Supplier: dft.suppliers,
+    # am.Supplier: dft.suppliers,
     am.CatalogPart: dft.catalog_parts,
     am.Employee: dft.employees,
-    am.NewArrival: dft.new_arrivals,
-    am.NewArrivalDetail: dft.new_arr_detail
+    # am.NewArrival: dft.new_arrivals,
+    # am.NewArrivalDetail: dft.new_arr_detail
 }
 
 
