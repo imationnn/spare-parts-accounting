@@ -32,3 +32,4 @@ from .actual_product_schema import (
     ActualProductUpdateIn,
     ActualProductUpdateOut
 )
+from .client_schema import PhysicalClientIn
