@@ -9,7 +9,8 @@ from .views import (
     shop_router,
     supplier_router,
     arrive_router,
-    act_product_router
+    act_product_router,
+    client_router
 )
 
 
@@ -23,3 +24,4 @@ main_router.include_router(shop_router)
 main_router.include_router(supplier_router)
 main_router.include_router(arrive_router)
 main_router.include_router(act_product_router)
+main_router.include_router(client_router)
