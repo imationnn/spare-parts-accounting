@@ -7,3 +7,4 @@ from .shop_service import ShopService
 from .supplier_service import SupplierService
 from .new_arrival_service import NewArrivalService
 from .actual_product_service import ActualProductService
+from .client_service import ClientService
