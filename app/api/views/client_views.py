@@ -17,3 +17,14 @@ async def new_physic_client(
         client_service: ClientService = Depends()
 ) -> PhysicalClientOut:
     return await client_service.add_physic_client(client)
+
+
+@client_router.get(
+    "/physic/by-id",
+    summary="Получить клиента по id"
+)
+async def get_physic_client_by_id(
+        client_id: int,
+        client_service: ClientService = Depends()
+) -> PhysicalClientOut:
+    return await client_service.get_physic_client_by_id(client_id)

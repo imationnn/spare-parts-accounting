@@ -21,3 +21,9 @@ class ClientService:
             return PhysicalClientOut.model_validate(result, from_attributes=True)
         except StatementError:
             raise HTTPException(400, detail="This card number already added")
+
+    async def get_physic_client_by_id(self, client_id: int) -> PhysicalClientOut:
+        client = await self.physic_client_repository.get_client_by_id(client_id)
+        if client:
+            return PhysicalClientOut.model_validate(client, from_attributes=True)
+        raise HTTPException(404, detail="Client not found")
