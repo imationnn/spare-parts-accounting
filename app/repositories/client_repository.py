@@ -17,6 +17,9 @@ class PhysicalClientRepository(BaseRepository):
     async def get_client_by_id(self, client_id: int) -> model | None:
         return await self.get_one(id=client_id)
 
+    async def get_client_by_card_number(self, card_number: str) -> model | None:
+        return await self.get_one(sale_card=card_number)
+
 
 class JuridicalClientRepository(BaseRepository):
     model = JuridicalClient

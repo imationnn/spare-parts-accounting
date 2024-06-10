@@ -28,3 +28,14 @@ async def get_physic_client_by_id(
         client_service: ClientService = Depends()
 ) -> PhysicalClientOut:
     return await client_service.get_physic_client_by_id(client_id)
+
+
+@client_router.get(
+    "/physic/by-card-number",
+    summary="Получить клиента по номеру карты"
+)
+async def get_physic_client_by_card_number(
+        card_number: str,
+        client_service: ClientService = Depends()
+) -> PhysicalClientOut:
+    return await client_service.get_physic_client_by_card_number(card_number)

@@ -27,3 +27,9 @@ class ClientService:
         if client:
             return PhysicalClientOut.model_validate(client, from_attributes=True)
         raise HTTPException(404, detail="Client not found")
+
+    async def get_physic_client_by_card_number(self, card_number: str) -> PhysicalClientOut:
+        client = await self.physic_client_repository.get_client_by_card_number(card_number)
+        if client:
+            return PhysicalClientOut.model_validate(client, from_attributes=True)
+        raise HTTPException(404, detail="Client not found")
