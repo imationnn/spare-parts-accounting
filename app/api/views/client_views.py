@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.services import ClientService
 from app.api.dependencies import token_dep
@@ -39,3 +39,19 @@ async def get_physic_client_by_card_number(
         client_service: ClientService = Depends()
 ) -> PhysicalClientOut:
     return await client_service.get_physic_client_by_card_number(card_number)
+
+
+@client_router.get(
+    "/physic/search",
+    summary="Найти клиента",
+    description="Слова в фразе должны быть разделены пробелом, первые буквы в словах не обязательно должны быть заглавными."
+                "Если слово одно то результат сортируется по фамилиям соответствующим данному слову."
+                "Если слов 2 или 3 то первое используется для точного поиска."
+                "Например Иванов А А, будут варианты с фамилией Иванов и всеми именами и отчествами на А."
+                "Иван А А, будут все варианты с именем Иван и фамилиями и отчествами на А."
+)
+async def search_physic_client(
+        phrase: str = Query(min_length=2),
+        client_service: ClientService = Depends()
+) -> list[PhysicalClientOut]:
+    return await client_service.search_client(phrase)

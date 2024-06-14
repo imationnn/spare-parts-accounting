@@ -33,3 +33,10 @@ class ClientService:
         if client:
             return PhysicalClientOut.model_validate(client, from_attributes=True)
         raise HTTPException(404, detail="Client not found")
+
+    async def search_client(self, phrase: str) -> list[PhysicalClientOut]:
+        list_words = [word for word in phrase.title().split(" ") if word]
+        if not list_words:
+            raise HTTPException(400, detail="Empty request")
+        clients = await self.physic_client_repository.search_client(list_words)
+        return [PhysicalClientOut.model_validate(client, from_attributes=True) for client in clients]
