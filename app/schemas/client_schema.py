@@ -15,10 +15,11 @@ class PhysicalClientIn(BaseModel):
 
     @field_validator("first_name", "last_name", "patronymic", "phone", "email", "sale_card")
     def strip_whitespaces(cls, field: str) -> str:
-        strip_field = field.strip()
-        if strip_field:
-            return strip_field
-        raise HTTPException(422, detail="String should have at least 1 characters")
+        if field is not None:
+            strip_field = field.strip()
+            if strip_field:
+                return strip_field
+            raise HTTPException(422, detail="String should have at least 1 characters")
 
 
 class PhysicalClientOut(PhysicalClientIn):
