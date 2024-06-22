@@ -52,3 +52,6 @@ class PhysicalClientRepository(BaseRepository):
 
 class JuridicalClientRepository(BaseRepository):
     model = JuridicalClient
+
+    async def add_new_client(self, **data) -> model:
+        return await self.add_one(**data)
