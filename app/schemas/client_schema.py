@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field, field_validator
 from fastapi import HTTPException
 
+from app.schemas import OrgAttr
+
 
 class PhysicalClientIn(BaseModel):
     first_name: str = Field(min_length=1, max_length=30)
@@ -24,3 +26,18 @@ class PhysicalClientIn(BaseModel):
 
 class PhysicalClientOut(PhysicalClientIn):
     id: int
+
+
+class JuridicalClientIn(BaseModel):
+    org_name: str = Field(min_length=1, max_length=50)
+    sale: int = Field(default=0, ge=0)
+    sale_card: str | None = Field(default=None)
+    phone: str | None = Field(default=None, examples=["+7-900-111-11-11"])
+    comment: str | None = Field(default=None, max_length=300)
+    is_black_list: bool = Field(default=False)
+    org_attr: OrgAttr
+
+
+class JuridicalClientOut(JuridicalClientIn):
+    id: int
+    org_attr_id: int
