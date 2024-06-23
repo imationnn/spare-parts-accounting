@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.services import ClientService
 from app.api.dependencies import token_dep
-from app.schemas import PhysicalClientIn, PhysicalClientOut
+from app.schemas import PhysicalClientIn, PhysicalClientOut, JuridicalClientOut, JuridicalClientIn
 
 
 client_router = APIRouter(prefix='/client', tags=['Клиенты'], dependencies=[token_dep])
@@ -55,3 +55,14 @@ async def search_physic_client(
         client_service: ClientService = Depends()
 ) -> list[PhysicalClientOut]:
     return await client_service.search_client(phrase)
+
+
+@client_router.post(
+    "/juridical/new",
+    summary="Добавить нового клиента"
+)
+async def new_juridical_client(
+        client: JuridicalClientIn,
+        client_service: ClientService = Depends()
+) -> JuridicalClientOut:
+    return await client_service.add_juridical_client(client)
