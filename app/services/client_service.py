@@ -61,3 +61,9 @@ class ClientService:
         client_model.org_attr = attr_model
         await self.jur_client_repository.session.commit()
         return JuridicalClientOut.model_validate(client_model, from_attributes=True)
+
+    async def get_juridical_client_by_id(self, client_id: int) -> JuridicalClientOut:
+        client = await self.jur_client_repository.get_client_by_id(client_id)
+        if client:
+            return JuridicalClientOut.model_validate(client, from_attributes=True)
+        raise HTTPException(404, detail="Client not found")
