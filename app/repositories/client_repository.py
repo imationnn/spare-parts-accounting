@@ -57,4 +57,6 @@ class JuridicalClientRepository(BaseRepository):
         return await self.add_one(**data)
 
     async def get_client_by_id(self, client_id: int) -> model | None:
-        return await self.get_one(id=client_id)
+        stmt = select(self.model).options(joinedload(self.model.org_attr)).where(self.model.id == client_id)
+        result = await self.session.scalars(stmt)
+        return result.one_or_none()

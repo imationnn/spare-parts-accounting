@@ -42,3 +42,5 @@ class JuridicalClient(Base):
     comment: Mapped[str | None]
     is_black_list: Mapped[def_false]
     org_attr_id: Mapped[int] = mapped_column(ForeignKey("org_attrs.id"))
+
+    org_attr: Mapped[OrgAttr] = relationship(cascade="delete")
