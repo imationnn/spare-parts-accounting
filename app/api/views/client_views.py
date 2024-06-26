@@ -66,3 +66,14 @@ async def new_juridical_client(
         client_service: ClientService = Depends()
 ) -> JuridicalClientOut:
     return await client_service.add_juridical_client(client)
+
+
+@client_router.get(
+    "/juridical/by-id",
+    summary="Получить клиента по id"
+)
+async def get_juridical_client_by_id(
+        client_id: int,
+        client_service: ClientService = Depends()
+) -> JuridicalClientOut:
+    return await client_service.get_juridical_client_by_id(client_id)
