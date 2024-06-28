@@ -1,3 +1,4 @@
+from .base_schema import BaseSchema
 from .brand_schema import BrandId, BrandUpdIn, BrandNewIn, BrandName, BrandNewOut, BrandUpdOut, BrandDelete
 from .margin_schema import Margin
 from .catalog_schema import (CatalogIn,

@@ -1,11 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from app.schemas import BaseSchema
 
 
-class BrandId(BaseModel):
+class BrandId(BaseSchema):
     id: int = Field(ge=1)
 
 
-class BrandNewIn(BaseModel):
+class BrandNewIn(BaseSchema):
     brand_name: str = Field(min_length=2, max_length=15)
 
 

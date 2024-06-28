@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from app.schemas.base_schema import BaseSchema
 
 
-class RoleOut(BaseModel):
+class RoleOut(BaseSchema):
     id: int
     rus_name: str

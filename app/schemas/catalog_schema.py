@@ -1,16 +1,16 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from .brand_schema import BrandNewOut
+from .brand_schema import BrandNewOut, BaseSchema
 from .margin_schema import Margin
 
 
-class Catalog(BaseModel):
+class Catalog(BaseSchema):
     number: str
     desc_eng: str | None
     desc_rus: str
 
 
-class CatalogIn(BaseModel):
+class CatalogIn(BaseSchema):
     number: str = Field(min_length=2, max_length=30)
     brand_id: int
     desc_eng: str | None = Field(default=None, max_length=100)
@@ -31,7 +31,7 @@ class CatalogOutByNumber(Catalog):
     brand: BrandNewOut
 
 
-class CatalogUpdIn(BaseModel):
+class CatalogUpdIn(BaseSchema):
     number: str | None = Field(default=None, min_length=2, max_length=30)
     brand_id: int | None = None
     desc_eng: str | None = Field(default=None, max_length=100)

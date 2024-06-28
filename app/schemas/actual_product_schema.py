@@ -1,17 +1,17 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from app.models import num_20_2
-from app.schemas import CatalogOutByNumber
+from app.schemas import CatalogOutByNumber, BaseSchema
 
 
-class Shop(BaseModel):
+class Shop(BaseSchema):
     id: int
     short_name: str
 
 
-class ActualProductOutById(BaseModel):
+class ActualProductOutById(BaseSchema):
     id: int
     part_id: int
     price: num_20_2
@@ -22,7 +22,7 @@ class ActualProductOutById(BaseModel):
     comment: str | None
 
 
-class ActualProductOutByPartId(BaseModel):
+class ActualProductOutByPartId(BaseSchema):
     id: int
     arrived: int
     released: int
@@ -35,7 +35,7 @@ class ActualProductOutByPartId(BaseModel):
     part: CatalogOutByNumber
 
 
-class ActualProductUpdateIn(BaseModel):
+class ActualProductUpdateIn(BaseSchema):
     price: num_20_2 | None = Field(default=None, ge=0)
     safety_reserve: int | None = Field(default=None, ge=0)
     comment: str | None = Field(default=None, max_length=200)

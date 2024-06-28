@@ -1,9 +1,7 @@
-from pydantic import BaseModel
-
-from .role_schema import RoleOut
+from .role_schema import RoleOut, BaseSchema
 
 
-class EmployeeOut(BaseModel):
+class EmployeeOut(BaseSchema):
     id: int
     login: str
     full_name: str
@@ -12,7 +10,7 @@ class EmployeeOut(BaseModel):
     role: RoleOut
 
 
-class NewEmployee(BaseModel):
+class NewEmployee(BaseSchema):
     login: str
     password: str
     full_name: str
@@ -20,7 +18,7 @@ class NewEmployee(BaseModel):
     role_id: int | None = None
 
 
-class EmployeeUpdOut(BaseModel):
+class EmployeeUpdOut(BaseSchema):
     full_name: str | None = None
     phone: str | None = None
     is_active: bool | None = None

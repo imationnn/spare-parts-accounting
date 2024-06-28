@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
 from datetime import datetime
 
 from app.models.base import num_20_2
-from app.schemas import SupplierListOut, CatalogOutByNumber
+from app.schemas import SupplierListOut, CatalogOutByNumber, BaseSchema
 
 
-class Employee(BaseModel):
+class Employee(BaseSchema):
     id: int
     full_name: str
 
@@ -14,7 +14,7 @@ class Supplier(SupplierListOut):
     pass
 
 
-class NewArrivalIn(BaseModel):
+class NewArrivalIn(BaseSchema):
     invoice_number: str = Field(min_length=2, max_length=30)
     invoice_date: str = Field(examples=["15.01.2024"])
     supplier_id: int
@@ -33,7 +33,7 @@ class NewArrivalOut(ArrivalNewOut):
     supplier: Supplier
 
 
-class ArrivalDetailNewIn(BaseModel):
+class ArrivalDetailNewIn(BaseSchema):
     part_id: int
     qty: int = Field(gt=0)
     amount: num_20_2 = Field(ge=0)
@@ -54,7 +54,7 @@ class NewArrivalDetailGetList(ArrivalDetailNewOut):
     employee: Employee
 
 
-class NewArrivalUpdateIn(BaseModel):
+class NewArrivalUpdateIn(BaseSchema):
     invoice_number: str | None = Field(default=None, min_length=2, max_length=30)
     invoice_date: str | None = Field(default=None, examples=["15.01.2024"])
     supplier_id: int | None = None
@@ -65,7 +65,7 @@ class NewArrivalUpdateOut(ArrivalNewOut):
     employee_id: int
 
 
-class NewArrivalDetailUpdateIn(BaseModel):
+class NewArrivalDetailUpdateIn(BaseSchema):
     part_id: int | None = None
     qty: int | None = Field(default=None, gt=0)
     amount: num_20_2 | None = Field(default=None, ge=0)

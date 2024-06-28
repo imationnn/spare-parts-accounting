@@ -1,14 +1,14 @@
-from pydantic import BaseModel
+from app.schemas import BaseSchema
 
 
-class ShopIn(BaseModel):
+class ShopIn(BaseSchema):
     short_name: str
     full_name: str | None = None
     ip_address: str
     is_active: bool
 
 
-class ShopUpd(BaseModel):
+class ShopUpd(BaseSchema):
     short_name: str | None = None
     full_name: str | None = None
     ip_address: str | None = None

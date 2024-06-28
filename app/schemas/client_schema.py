@@ -1,10 +1,10 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 from fastapi import HTTPException
 
-from app.schemas import OrgAttr
+from app.schemas import OrgAttr, BaseSchema
 
 
-class PhysicalClientIn(BaseModel):
+class PhysicalClientIn(BaseSchema):
     first_name: str = Field(min_length=1, max_length=30)
     last_name: str = Field(min_length=1, max_length=30)
     patronymic: str | None = Field(default=None, min_length=1, max_length=30)
@@ -28,7 +28,7 @@ class PhysicalClientOut(PhysicalClientIn):
     id: int
 
 
-class JuridicalClientIn(BaseModel):
+class JuridicalClientIn(BaseSchema):
     org_name: str = Field(min_length=1, max_length=50)
     sale: int = Field(default=0, ge=0)
     sale_card: str | None = Field(default=None)
