@@ -22,20 +22,20 @@ class ClientService:
         try:
             result = await self.physic_client_repository.add_new_client(**client.model_dump())
             await self.physic_client_repository.session.commit()
-            return PhysicalClientOut.model_validate(result, from_attributes=True)
+            return PhysicalClientOut.model_validate(result)
         except StatementError:
             raise HTTPException(400, detail="This card number already added")
 
     async def get_physic_client_by_id(self, client_id: int) -> PhysicalClientOut:
         client = await self.physic_client_repository.get_client_by_id(client_id)
         if client:
-            return PhysicalClientOut.model_validate(client, from_attributes=True)
+            return PhysicalClientOut.model_validate(client)
         raise HTTPException(404, detail="Client not found")
 
     async def get_physic_client_by_card_number(self, card_number: str) -> PhysicalClientOut:
         client = await self.physic_client_repository.get_client_by_card_number(card_number)
         if client:
-            return PhysicalClientOut.model_validate(client, from_attributes=True)
+            return PhysicalClientOut.model_validate(client)
         raise HTTPException(404, detail="Client not found")
 
     async def search_client(self, phrase: str) -> list[PhysicalClientOut]:
@@ -43,7 +43,7 @@ class ClientService:
         if not list_words:
             raise HTTPException(400, detail="Empty request")
         clients = await self.physic_client_repository.search_client(list_words)
-        return [PhysicalClientOut.model_validate(client, from_attributes=True) for client in clients]
+        return [PhysicalClientOut.model_validate(client) for client in clients]
 
     # For juridical clients
 
@@ -60,10 +60,10 @@ class ClientService:
             raise HTTPException(400, detail="This card number already added")
         client_model.org_attr = attr_model
         await self.jur_client_repository.session.commit()
-        return JuridicalClientOut.model_validate(client_model, from_attributes=True)
+        return JuridicalClientOut.model_validate(client_model)
 
     async def get_juridical_client_by_id(self, client_id: int) -> JuridicalClientOut:
         client = await self.jur_client_repository.get_client_by_id(client_id)
         if client:
-            return JuridicalClientOut.model_validate(client, from_attributes=True)
+            return JuridicalClientOut.model_validate(client)
         raise HTTPException(404, detail="Client not found")

@@ -29,12 +29,12 @@ class CatalogService:
         result = await self.repository.get_one_part(part_id)
         if not result:
             raise PartNotFound
-        return CatalogOutById.model_validate(result, from_attributes=True)
+        return CatalogOutById.model_validate(result)
 
     async def get_parts_by_number(self, number: str) -> list[CatalogOutByNumber]:
         number = self.normalize_number(number)
         result = await self.repository.get_multi(limit=50, search_id=number)
-        return [CatalogOutByNumber.model_validate(item, from_attributes=True) for item in result]
+        return [CatalogOutByNumber.model_validate(item) for item in result]
 
     async def update_part(self, part_id: int, part: CatalogUpdIn) -> CatalogUpdOut:
         values = part.model_dump(exclude_unset=True)
@@ -51,7 +51,7 @@ class CatalogService:
             raise PartBadParameters
         except NoResultFound:
             raise PartNotFound
-        return CatalogUpdOut.model_validate(result, from_attributes=True)
+        return CatalogUpdOut.model_validate(result)
 
     async def add_part(self, part: CatalogIn) -> CatalogInOut:
         values = part.model_dump(exclude_none=True)
@@ -61,7 +61,7 @@ class CatalogService:
             await self.repository.session.commit()
         except StatementError:
             raise PartBadParameters
-        return CatalogInOut.model_validate(result, from_attributes=True)
+        return CatalogInOut.model_validate(result)
 
     async def delete_part(self, part_id: int) -> CatalogDelete:
         try:
@@ -71,4 +71,4 @@ class CatalogService:
             raise PartCannotBeDeleted
         except NoResultFound:
             raise PartNotFound
-        return CatalogDelete.model_validate(result, from_attributes=True)
+        return CatalogDelete.model_validate(result)

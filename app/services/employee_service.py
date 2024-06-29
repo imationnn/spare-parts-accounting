@@ -16,17 +16,17 @@ class EmployeeService:
         employee = await self.repository.get_employee(login=login)
         if not employee:
             raise EmployeeNotFound
-        return EmployeeOut.model_validate(employee, from_attributes=True)
+        return EmployeeOut.model_validate(employee)
 
     async def get_employee_by_id(self, employee_id: int) -> EmployeeOut:
         employee = await self.repository.get_employee(id=employee_id)
         if not employee:
             raise EmployeeNotFound
-        return EmployeeOut.model_validate(employee, from_attributes=True)
+        return EmployeeOut.model_validate(employee)
 
     async def get_all_employees(self) -> list[EmployeeOut]:
         employees = await self.repository.get_all_users()
-        return [EmployeeOut.model_validate(employee, from_attributes=True) for employee in employees]
+        return [EmployeeOut.model_validate(employee) for employee in employees]
 
     async def add_new_employee(self, employee: NewEmployee) -> NewEmployeeOut:
         if await self.repository.get_employee(login=employee.login):
@@ -37,7 +37,7 @@ class EmployeeService:
             await self.repository.session.commit()
         except StatementError:
             raise EmployeeBadParameters
-        return NewEmployeeOut.model_validate(result, from_attributes=True)
+        return NewEmployeeOut.model_validate(result)
 
     async def edit_employee(self, employee_id: int, employee: EmployeeUpdIn) -> EmployeeUpdOut:
         values = employee.model_dump(exclude_unset=True)
@@ -54,4 +54,4 @@ class EmployeeService:
             raise EmployeeBadParameters
         except NoResultFound:
             raise EmployeeNotFound
-        return EmployeeUpdOut.model_validate(result, from_attributes=True)
+        return EmployeeUpdOut.model_validate(result)

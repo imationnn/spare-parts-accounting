@@ -15,11 +15,11 @@ class ShopService:
         result = await self.repository.get_shop(id=shop_id)
         if not result:
             raise ShopNotFound
-        return ShopOut.model_validate(result, from_attributes=True)
+        return ShopOut.model_validate(result)
 
     async def get_all_shops(self) -> list[ShopOut]:
         result = await self.repository.get_all_shops()
-        return [ShopOut.model_validate(item, from_attributes=True) for item in result]
+        return [ShopOut.model_validate(item) for item in result]
 
     async def add_new_shop(self, new_shop: ShopIn) -> ShopOut:
         values = new_shop.model_dump(exclude_none=True)
@@ -28,7 +28,7 @@ class ShopService:
             await self.repository.session.commit()
         except StatementError:
             raise ShopBadParameters
-        return ShopOut.model_validate(result, from_attributes=True)
+        return ShopOut.model_validate(result)
 
     async def update_shop(self, shop_id: int, shop: ShopUpd) -> ShopOut:
         values = shop.model_dump(exclude_unset=True)
@@ -41,7 +41,7 @@ class ShopService:
             raise ShopBadParameters
         except NoResultFound:
             raise ShopNotFound
-        return ShopOut.model_validate(result, from_attributes=True)
+        return ShopOut.model_validate(result)
 
     async def delete_shop(self, shop_id: int) -> ShopDelete:
         try:
@@ -51,4 +51,4 @@ class ShopService:
             raise ShopCannotBaDeleted
         except NoResultFound:
             raise ShopNotFound
-        return ShopDelete.model_validate(result, from_attributes=True)
+        return ShopDelete.model_validate(result)

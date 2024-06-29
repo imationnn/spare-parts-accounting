@@ -24,11 +24,11 @@ class SupplierService:
 
     async def get_supplier_by_id(self, supplier_id: int) -> SupplierOut:
         supplier_model = await self._get_supplier_by_id(supplier_id)
-        return SupplierOut.model_validate(supplier_model, from_attributes=True)
+        return SupplierOut.model_validate(supplier_model)
 
     async def get_all_suppliers(self, limit: int = 500, offset: int = 0) -> list[SupplierListOut]:
         result = await self.repository.get_multi(limit=limit, offset=offset)
-        return [SupplierListOut.model_validate(item, from_attributes=True) for item in result]
+        return [SupplierListOut.model_validate(item) for item in result]
 
     async def add_new_supplier(self, supplier: SupplierIn) -> SupplierOut:
         attr_model = await self.org_attr_repository.add_organization_attrs(
@@ -40,7 +40,7 @@ class SupplierService:
         )
         sup_model.org_attr = attr_model
         await self.repository.session.commit()
-        return SupplierOut.model_validate(sup_model, from_attributes=True)
+        return SupplierOut.model_validate(sup_model)
 
     async def update_supplier(self, supplier_id: int, supplier_upd: SupplierUpdate) -> SupplierOut:
         supplier = await self._get_supplier_by_id(supplier_id)
@@ -51,7 +51,7 @@ class SupplierService:
             )
         except StatementError:
             raise SupplierBadParameters
-        return SupplierOut.model_validate(updated_supplier, from_attributes=True)
+        return SupplierOut.model_validate(updated_supplier)
 
     async def delete_supplier(self, supplier_id: int) -> SupplierOut:
         supplier = await self._get_supplier_by_id(supplier_id)
@@ -59,4 +59,4 @@ class SupplierService:
             await self.repository.delete_supplier(supplier)
         except StatementError:
             raise SupplierBadParameters
-        return SupplierOut.model_validate(supplier, from_attributes=True)
+        return SupplierOut.model_validate(supplier)

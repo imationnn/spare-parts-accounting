@@ -85,11 +85,11 @@ class NewArrivalService:
             limit=limit,
             offset=offset
         )
-        return [NewArrivalOut.model_validate(item, from_attributes=True) for item in result]
+        return [NewArrivalOut.model_validate(item) for item in result]
 
     async def get_arr_details_by_arrive_id(self, arrive_id: int) -> list[NewArrivalDetailGetList]:
         result = await self.new_arr_det_repository.get_list_arrival_details(arrive_id)
-        return [NewArrivalDetailGetList.model_validate(item, from_attributes=True) for item in result]
+        return [NewArrivalDetailGetList.model_validate(item) for item in result]
 
     async def create_new_arrive(self, new_arrive: NewArrivalIn, token_payload: dict) -> ArrivalNewOut:
         employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
@@ -103,7 +103,7 @@ class NewArrivalService:
             await self.new_arr_repository.session.commit()
         except StatementError:
             raise ArrivalAlreadyExist
-        return ArrivalNewOut.model_validate(result, from_attributes=True)
+        return ArrivalNewOut.model_validate(result)
 
     async def add_new_arr_detail(self, new_arrive_det: ArrivalDetailNewIn, token_payload: dict) -> ArrivalDetailNewOut:
         employee_id = token_payload[NAME_FIELD_EMPLOYEE_ID]
@@ -121,7 +121,7 @@ class NewArrivalService:
             await self.new_arr_det_repository.session.commit()
         except StatementError:
             raise ArrivalBadParameters
-        return ArrivalDetailNewOut.model_validate(result, from_attributes=True)
+        return ArrivalDetailNewOut.model_validate(result)
 
     async def update_arrive(self, arrive_id: int, update_arrival: NewArrivalUpdateIn) -> NewArrivalUpdateOut:
         await self._check_arrival(arrive_id)
@@ -133,7 +133,7 @@ class NewArrivalService:
             await self.new_arr_repository.session.commit()
         except StatementError:
             raise ArrivalBadParameters
-        return NewArrivalUpdateOut.model_validate(result, from_attributes=True)
+        return NewArrivalUpdateOut.model_validate(result)
 
     async def get_arrive_detail(self, arr_detail_id: int) -> NewArrivalDetailRepository.model:
         arrive_detail = await self.new_arr_det_repository.get_arrive_detail(arr_detail_id)
@@ -162,18 +162,18 @@ class NewArrivalService:
             await self.new_arr_det_repository.update_arrival_details(arrive_detail)
         except StatementError:
             raise ArrivalBadParameters
-        return NewArrivalDetailUpdateOut.model_validate(arrive_detail, from_attributes=True)
+        return NewArrivalDetailUpdateOut.model_validate(arrive_detail)
 
     async def delete_arrive(self, arrival_id: int) -> NewArrivalDeleteOut:
         arrive = await self._check_arrival(arrival_id)
         await self.new_arr_repository.delete_arrival(arrive)
-        return NewArrivalDeleteOut.model_validate(arrive, from_attributes=True)
+        return NewArrivalDeleteOut.model_validate(arrive)
 
     async def delete_arr_detail(self, arr_detail_id: int) -> NewArrivalDetailDeleteOut:
         arrive_detail = await self.get_arrive_detail(arr_detail_id)
         await self._check_arrival(arrive_detail.arrive_id)
         await self.new_arr_det_repository.delete_arrive_detail(arrive_detail)
-        return NewArrivalDetailDeleteOut.model_validate(arrive_detail, from_attributes=True)
+        return NewArrivalDetailDeleteOut.model_validate(arrive_detail)
 
     async def _check_arrival(self, arrive_id: int) -> NewArrivalRepository.model:
         arrive = await self.new_arr_repository.get_arrival_by_id(arrive_id)

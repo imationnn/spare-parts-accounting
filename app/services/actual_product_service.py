@@ -28,10 +28,7 @@ class ActualProductService:
         return product
 
     async def get_actual_product_by_id(self, product_id: int) -> ActualProductOutById:
-        return ActualProductOutById.model_validate(
-            await self._get_actual_product_by_id(product_id),
-            from_attributes=True
-        )
+        return ActualProductOutById.model_validate(await self._get_actual_product_by_id(product_id))
 
     async def get_list_actual_products_by_part_id(
             self,
@@ -65,7 +62,7 @@ class ActualProductService:
             date_range=date_range,
             current_shop=current_shop
         )
-        return [ActualProductOutByPartId.model_validate(item, from_attributes=True) for item in result]
+        return [ActualProductOutByPartId.model_validate(item) for item in result]
 
     async def update_actual_product(
             self,
@@ -77,4 +74,4 @@ class ActualProductService:
             raise ProductBadParameters
         await self._get_actual_product_by_id(product_id)
         result = await self.actual_prod_repository.update_actual_product(product_id, **values)
-        return ActualProductUpdateOut.model_validate(result, from_attributes=True)
+        return ActualProductUpdateOut.model_validate(result)
